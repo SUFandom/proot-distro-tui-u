@@ -1,0 +1,26 @@
+Proot-distro
+
+About Text
+
+============================
+Version : 2.0-unstable
+
+WARNING, THIS IS AN UNSTABLE VERSION OF THE GIT
+REPOSITORY, CLONE THE MAIN VERSION FOR STABLE RELEASE
+
+Author: SUFandom
+
+Codename: Shino
+============================
+
+Fork Info (Enter info here if you're the Forker):
+
+FORK VERSION:
+
+FORK AUTHOR:
+
+FORK GIT LINK:
+
+CODENAME FORK:
+
+=================================
