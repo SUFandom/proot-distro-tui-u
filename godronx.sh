@@ -10,7 +10,7 @@
 exec 3>&1
 menuvar=$( dialog \
     --backtitle "Andronix Install Distro Area" \
-    --menu "Install your Andronix Distro" \
+    --title "Install your Andronix Distro" \
     --clear \
     --menu "Install Distro that you Really want! Only Present here are available." 25 45 6 \
     "1" "Debian 10 (ARMv7)" \
@@ -22,9 +22,6 @@ exec 3>&-
 case $exitsnif in
  $DIALOG_CANCEL)
  ./main.sh
- ;;
- $DIALOG_ESC)
- exit 1
  ;;
 esac
 case $menuvar in

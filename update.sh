@@ -11,7 +11,7 @@ cat AgDhMRQD
 sleep 5
 clear
 
-if (grep -i "Version:2.0-unstable" wt2xyCxH)
+if (grep -i "Version:2.1-unstable" wt2xyCxH)
 then
 clear
 rm -rf "wt2xyCxH"

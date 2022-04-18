@@ -1,0 +1,13 @@
+DIVORCE.. OR "--isolated" Function of
+this Script
+
+isolated is making sure that the internals of
+your own distro, does NOT interfere with Termux Binaries
+
+Doing it so, you can actually use the distros as real oper-
+ating system, the problem is that, you cannoy access the 
+/sdcard
+
+a solution : install gftp and AWebServer by Sylkat Tools (sorry
+if wrong spelling)
+https://play.google.com/store/apps/details?id=com.sylkat.apache

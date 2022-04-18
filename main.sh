@@ -4,6 +4,9 @@ BT="Proot-Distro TUI"
 WIDTH=0
 HEIGHT=0
 prox=$PID
+name=$(whoami)
+#Randomizer
+ram=$( shuf -i  1-10 -n 1 )
 #ExitVars
 
 : ${DIALOG_OK=0}
@@ -24,6 +27,9 @@ display_src() {
 #Code
 tput civis
 termux-notification --priority max --ongoing -i 013 -t "Proot-Distro-TUI-U is Running\!" -c "Proot-Distro-TUI-U is running at Process ID: $prox" --button1 "End Process" --button1-action bash kill $prox 
+clear
+dialog -- backtitle "Proot-distro-tui-u [UNSTABLE 2.1]" --title "Hello, $name" --infobox "$( sed -n $ram\p splash/splash.txt ) " 0 0
+sleep 6
 exec 3>&1
 menu=$( dialog \
   --backtitle "$BT" \
@@ -38,6 +44,7 @@ menu=$( dialog \
   "7" "Update Script" \
   "8" "Uninstall Script"  \
   "9" "About" \
+  "10" "Isolation Mode (Separate your Distro from Termux Framework like it was a divorce)" \
   2>&1 1>&3 \
   )
 exitvalue=$?
@@ -94,7 +101,7 @@ case $menu in
  ;;
  9)
  #Hey Forker! Change this to your info. but at help/about.text, only type the fields recommend there
- output=$(echo "Version 2.0-unstable, Under GPL 3.0. \
+ output=$(echo "Version 2.1-unstable, Under GPL 3.0. \
    It Perfectly Runs on Dialog \
    Author: SUFandom \
    Creator: SUFandom \
@@ -102,5 +109,8 @@ case $menu in
    Reddit: https://reddit.com/u/itsfreepizza " )
  display_src "About"
  ./main.sh
+ ;;
+ 10)
+ 
  ;;
  esac

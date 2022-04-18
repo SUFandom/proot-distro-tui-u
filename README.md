@@ -10,6 +10,13 @@
 
 A Bug Report is necessary when using this version so please report if there's an issue
 
+Otherwise Visit the [Stable Version](https://github.com/SUFandom/proot-distro-tui)
+
+## Codename Shino
+
+![mascot](img-src/shino_mascot.png)
+
+Yes i named this codeversion after her
 
 ## A better tool to Start your Distro on Termux!
 
@@ -55,20 +62,12 @@ Check Issues Page. Spam there..
 
 ## Updates!🔧
 
-2.0-unstable has:
+2.1-unstable has:
 
-- New! Support on Andronix Installation
+- New Splash System (inherited from [Hello Termux](https://github.com/SUFandom/hello-termux))
+- Fix when going to install Andronix Distros, Crash happens
+- New Isolation System
 
-    I've Recently Discovered that proot-distro's installation and execution method binds with termux too much, that it defeats the purpose to use the installed distro if its just try to find library in the termux directory.
-    
-    With this support available, means that debian is isolated and only work whats available inside its modules, not using other modules that wasnt supposed to be there in the first place
-    
-    Sadly you are going to use an outdated Debian 10 and Ubuntu 20, but its for the performance benefits
-    
-    **AND IF YOU'RE THINKING, THAT THIS SCRIPT WILL GIVE YOU ACCESS TO ANDRONIX MODDED ARM64 DISTRO, YOU'RE WRONG, BECAUSE IT ONLY INSTALLS FREE VERSIONS, THIS ALSO TO AVOID LEGAL TROUBLE AND TO KILL YOUR EXPECTATIONS RIGHT ON THE SPOT.. CHECK SOURCE CODE FOR MORE**
-    
-    
-    
 ## Available Andronix Library:
 
 - Debian (Only ARMv7)
@@ -90,6 +89,11 @@ To activate LLVMPIPE:
 sudo apt install tigervnc tigervnc-xorg-extension -y
 ```
 Tigervnc works together with LLVMPIPE than XSDL, idk why about that but meh.
+
+When attempting to divorce your distro with termux binary, you need gFTP by doing `sudo apt install gFTP -y` and also AWebServer to Sync in. (ES File FTP could work, but most of them laying around are malware now.) 
+
+[Download AWebServer](https://play.google.com/store/apps/details?id=com.sylkat.apache)
+
 
 ## Notice
 

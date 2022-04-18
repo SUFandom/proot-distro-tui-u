@@ -10,7 +10,7 @@
 exec 3>&1
 menuvar=$( dialog \
     --backtitle "Andronix Uninstall Distro Area" \
-    --menu "Unnstall your Andronix Distro" \
+    --title "Unnstall your Andronix Distro" \
     --clear \
     --menu "Uninstall Distro that you Really Don't want!" 25 45 6 \
     "1" "Debian 10 (ARMv7)" \
