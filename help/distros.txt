@@ -9,7 +9,7 @@ It runs on RAM memory Perfectly
 to achieve good speeds.
 Compat:
 Supports 64bit CPU on 32bit Mode
-LLVMPIPE Support Unknown
+LLVMPIPE Support Present under tigervnc
 
 Arch Linux
 Arch Linux is a Linux distribution
@@ -19,7 +19,7 @@ to the KISS principle, But works
 on ARM
 Compat:
 Doesnt work Properly on 64bit CPU on 32bit
-LLVMPIPE SUPPORT UNKNOWN
+LLVMPIPE SUPPORT UNDER TIGERVNC
 
 Debian Linux:
 Debian, also known as Debian GNU/Linux,
@@ -30,10 +30,12 @@ Debian Project, which was established
 by Ian Murdock on August 16, 1993
 Compat:
 Supports 64bit CPU on 32Bit mode
-LLVMPIPE MAY HAVE TO BE ACTIVATED MANUALLY
+LLVMPIPE WORKS UNDER ANY X11 PROCESS
 SLOW IN DEMANDING TASKS
 HARDWARE GPU SUPPORT ONLY AVAILABLE ON
-ADRENO
+ADRENO, BUT YOU CAN MANUALLY INSTALL
+ANDROID OPENGL EXTENSION IF YOU WANT 
+(MALI ONLY)
 
 Fedora
 Fedora Linux is a Linux 
@@ -58,7 +60,7 @@ mainly developed in Austria,
 France and Germany.
 Compat:
 Only Supports AARCH64
-LLVMPIPE UNKNOWN SUPPORT
+LLVMPIPE WORKS UNDER TIGERVNC/TIGHTVNC
 
 OpenSuse
 openSUSE is a project
@@ -69,9 +71,8 @@ Linux distributions, mainly
 Tumbleweed, a tested rolling release,
 and Leap, a distribution with long-term 
 support.
-Compat:
-64bit CPU in 32bit mode doesn't support
-LLVMPIPE UNKNOWN SUPPORT
+Compat
+LLVMPIPE CAN RUN (UNPROVEN YET)
 
 Ubuntu
 Ubuntu is the modern, open source 
@@ -80,8 +81,9 @@ enterprise server, desktop, cloud, and IoT.
 Compat:
 64Bit CPU in 32 bit mode does support
 but sometimes performance wise, it will go crazy
-slow
-LLVMPIPE IS DISABLED BY DEFAULT
+slow, Find 'tracker-miner-fs' and remove that
+to go fast
+LLVMPIPE IS DISABLED BY DEFAULT UNDER TIGERVNC
 
 Void Linux
 Void Linux is an independent Linux

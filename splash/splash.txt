@@ -1,8 +1,8 @@
 What if we commit, and there were no conflicts?
 Did you know that this script is licensed as GPL 3.0?
 Team Shino ftw
-Andronix Support! Nice!
-Pelya, Give us standalone Pulse Server APK For god's sake
+Goodbye Andronix Support!
+Do you know that you can make termux, as a host audio server?
 Did you know there's a Manga For Ubuntu, called Ubunchu?! Find the link by executing main.sh a lot, its somewhere in the splashes
 http://divajutta.com/doctormo/ubunchu/index.html - The link towards Ubunchuu, not joking Hurry up, you have 5 Fuxking seconds left.
 if theres a command 'cat', is there a 'dog' command?

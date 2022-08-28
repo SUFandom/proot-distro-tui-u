@@ -44,7 +44,7 @@ case $DISTROLINUX in
  clear
 if ( dialog --backtitle "$BT" --title "Alpine Linux" --yes-label "Run\!" --no-label "Back" --yesno "Alpine Linux is a Lightweight Linux Distribution, Once Runs on Android system, it stays running on Your RAM so its respnse and Performance is Extraordinary, This is a go-to for users who want to experience Fast Linux operating System.. (Supports ARMv8l under ARMv7a)" 0 0 )
 then
- ./runtime/distro/alpine.sh 
+ ./runtime/execute.sh --alpine
  else
  ./go.sh
  fi
@@ -53,7 +53,7 @@ then
  clear
  if ( dialog --backtitle "$BT" --title "Arch Linux" --yes-label "Run\!" --no-label "Back" --yesno "Arch Linux is a Linux distribution created for computers with x86-64 processors. Arch Linux adheres to the KISS principle, But works on ARM! (only work on Pure ARMv7 and ARM64, Architecture running ARMv8l or 64bit CPU running 32Bit Mode, Doesn't work properly.)" 0 0 )
  then
- ./runtime/distro/arch.sh
+ ./runtime/execute.sh --archlinux
  else
  ./go.sh
  fi
@@ -62,7 +62,7 @@ then
  clear
  if ( dialog --backtitle "$BT" --title "Debian" --yes-label "Run\!" --no-label "Back" --yesno "Debian, also known as Debian GNU/Linux, is a GNU/Linux distribution composed of free and open-source software, developed by the community-supported Debian Project, which was established by Ian Murdock on August 16, 1993 (LLVMPIPE may Be disabled by Default all throughout arm architecture except Qualcomm with Adreno GPU Chipset, so you cant run Mesa without telling the command line that you need to activate it. That also being limited access to All desktop environment.)" 0 0 )
  then
- ./runtime/distro/debian.sh 
+ ./runtime/execute.sh --debian
  else
  ./go.sh
  fi
@@ -70,7 +70,7 @@ then
  4)
  if ( dialog --backtitle "$BT" --title "Fedora" --yes-label "Run\!" --no-label "Back" --yesno "Fedora Linux is a Linux distribution developed by the Fedora Project which is sponsored primarily by Red Hat with additional support and sponsors from other companies and organizations.. (This Distro only works Properly in Real ARMv7 and ARM64, Chipset Running 64Bit CPU while 32Bit Mode may suffer from issues installing Packages)" 0 0 )
  then
- ./runtime/distro/fedora.sh
+ ./runtime/execute.sh --fedora
  else
  ./go.sh
  fi
@@ -78,7 +78,7 @@ then
  5)
  if ( dialog --backtitle "$BT" --title "Manjaro Linux (ARM64)" --yes-label "Run\!" --no-label "Back" --yesno "Manjaro is a free and open-source Linux distribution based on the Arch Linux operating system. Manjaro has a focus on user-friendliness and accessibility. It features a rolling release update model and uses Pacman as its package manager. Manjaro is mainly developed in Austria, France and Germany. (This only works on ARM64 so dont spam Some shit on Issues page on the GitHub Page About this.)" 0 0 )
  then 
- ./runtime/distro/manjaro64.sh
+ ./runtime/execute.sh --manjaro
  else
  ./go.sh
  fi
@@ -86,7 +86,7 @@ then
  6)
  if ( dialog --backtitle "$BT" --title "OpenSuse" --yes-label "Run\!" --no-label "Back" --yesno "openSUSE is a project that serves to promote the use of free and open-source software. openSUSE is well known for its Linux distributions, mainly Tumbleweed, a tested rolling release, and Leap, a distribution with long-term support.(OpenSuse is very slow at 32Bit)" 0 0 )
  then 
- ./runtime/distro/opensuse.sh 
+ ./runtime/execute.sh --opensuse
  else
  ./go.sh
  fi
@@ -94,7 +94,7 @@ then
  7)
  if ( dialog --backtitle "$BT" --title "Ubuntu" --yes-label "Run\!" --no-label "Back" --yesno "Ubuntu is the modern, open source operating system on Linux for the enterprise server, desktop, cloud, and IoT. (Same with Debian, LLVMPIPE is Disabled by Default under ARM, You cant run software that rely on OpenGL Render. Unless you type an extra command or You have Adreno GPU" 0 0  )
  then
- ./runtime/distro/ubuntu.sh
+ ./runtime/execute.sh --ubuntu.sh 
  else
  ./go.sh
  fi
@@ -102,7 +102,7 @@ then
  8)
  if ( dialog --backtitle "$BT" --title "Void Linux" --yes-label "Run\!" --no-label "Back" --yesno "Void Linux is an independent Linux distribution that uses the X Binary Package System package manager, which was designed and implemented from scratch, and the runit init system" 0 0 )
  then
- ./runtime/distro/void.sh
+ ./runtime/execute.sh --void
  else
  ./go.sh
  fi

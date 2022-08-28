@@ -5,7 +5,7 @@ isolated is making sure that the internals of
 your own distro, does NOT interfere with Termux Binaries
 
 Doing it so, you can actually use the distros as real oper-
-ating system, the problem is that, you cannoy access the 
+ating system, the problem is that, you cannnot access the 
 /sdcard
 
 a solution : install gftp and AWebServer by Sylkat Tools (sorry

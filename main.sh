@@ -37,14 +37,10 @@ menu=$( dialog \
   --menu "Proot-Distro TUI Menu." 25 45 10 \
   "1" "Install/Run Distro"  \
   "2" "Uninstall Distro"  \
-  "3" "Install Andronix Distro" \
-  "4" "Run Andronix Distro" \
-  "5" "Uninstall Andronix Distro"  \
-  "6" "Help"  \
-  "7" "Update Script" \
-  "8" "Uninstall Script"  \
-  "9" "About" \
-  "10" "Isolation Mode (Separate your Distro from Termux Framework like it was a divorce)" \
+  "3" "Help"  \
+  "4" "Update Script" \
+  "5" "Uninstall Script"  \
+  "6" "About" \
   2>&1 1>&3 \
   )
 exitvalue=$?
@@ -76,30 +72,18 @@ case $menu in
  ./rm.sh
  ;;
  3)
- tput cnorm
- ./godronx.sh
- ;;
- 4)
- tput cnorm
- ./execdronx.sh
- ;;
- 5)
- tput cnorm
- ./remdronx.sh
- ;;
- 6)
  tput cnorm 
  ./help.sh 
  ;;
- 7)
+ 4)
  tput cnorm
  ./update.sh
  ;;
- 8)
+ 5)
  tput cnorm
  ./uninstall.sh
  ;;
- 9)
+ 6)
  #Hey Forker! Change this to your info. but at help/about.text, only type the fields recommend there
  output=$(echo "Version 2.1-unstable, Under GPL 3.0. \
    It Perfectly Runs on Dialog \
@@ -109,8 +93,5 @@ case $menu in
    Reddit: https://reddit.com/u/itsfreepizza " )
  display_src "About"
  ./main.sh
- ;;
- 10)
- 
  ;;
  esac
