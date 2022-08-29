@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Debian
-if [ $1 == "--debian" ]
+if [ "$1" == "--debian" ]
 then
 if (find $PREFIX/var/lib/proot-distro/installed-rootfs/debian)
 then

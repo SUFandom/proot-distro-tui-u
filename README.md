@@ -54,7 +54,7 @@ Each Distro is given information about themselves..
 
 ``` 
 
-chmod +x onetime.sh && ./onetime.sh 
+chmod +x onetime.sh && ./runtime.sh 
 
 ```
 

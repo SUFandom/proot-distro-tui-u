@@ -22,7 +22,7 @@ UX=$( dialog --backtitle "Remove" \
   "3" "Debian" \
   "4" "Fedora" \
   "5" "Manjaro (AARCH64)" \
-  "6" "OpenSUSe" \
+  "6" "OpenSuse" \
   "7" "Ubuntu" \
   "8" "Void" \
   2>&1 1>&3 \
@@ -45,7 +45,7 @@ tput cnorm
  if ( dialog --backtitle "Oh no\!" --title "Are you Sure?" --yes-label "Remove it\!" --no-label "Back" --yesno "Are you sure to Remove Alpine?" 0 0 )
  then
  tput cnorm 
- ./runtime/undistro/alpine.sh
+ ./runtime/remove.sh --alpine
  else
  ./rm.sh
  fi
@@ -54,7 +54,7 @@ tput cnorm
  if ( dialog --backtitle "Oh no\!" --title "Are you sure?" --yes-label "Remove it\!" --no-label "Back" --yesno "Are you sure to Remove Arch Linux?" 0 0 )
  then 
 tput cnorm
-./runtime/undistro/arch.sh
+./runtime/remove.sh --archlinux
 else
 ./rm.sh
 fi
@@ -63,7 +63,7 @@ fi
 if (dialog --backtitle "Oh no\!" --title "Are you sure?" --yes-label "Remove it\!" --no-label "Back" --yesno "Are you sure to Remove Debian?" 0 0 )
 then
 tput cnorm
-./runtime/undistro/debian.sh
+./runtime/remove.sh --debian
 else
 ./rm.sh
 fi 
@@ -72,14 +72,14 @@ fi
 if (dialog --backtitle "Oh no\!" --title "Are you sure?" --yes-label "Remove it\!" --no-label "Back" --yesno "Are you sure to Remove Fedora?" 0 0 )
 then
 tput cnorm
-./runtime/undistro/fedora.sh
+./runtime/remove.sh --fedora
 fi 
 ;;
 5)
 if (dialog --backtitle "Oh no\!" --title "Are you sure?" --yes-label "Remove it\!" --no-label "Back" --yesno "Are you sure to Remove Manjaro?" 0 0 )
 then
 tput cnorm
-./runtime/undistro/fedora.sh 
+./runtime/remove.sh --manjaro
 else
 ./rm.sh
 fi 
@@ -88,7 +88,7 @@ fi
 if (dialog --backtitle "Oh no\!" --title "Are you sure?" --yes-label "Remove it\!" --no-label "Back" --yesno "Are you sure to Remove Opensuse?" 0 0 )
 then
 tput cnorm
-./runtime/undistro/opensuse.sh 
+./runtime/remove.sh --opensuse 
 else
 ./rm.sh
 fi
@@ -97,7 +97,7 @@ fi
 if (dialog --backtitle "Oh no\!" --title "Are you sure?" --yes-label "Remove it\!" --no-label "Back" --yesno "Are you sure to Remove Ubuntu?" 0 0 )
 then
 tput cnorm
-./runtime/undistro/ubuntu.sh
+./runtime/remove.sh --ubuntu.sh
 else
 ./rm.sh
 fi
@@ -106,7 +106,7 @@ fi
 if (dialog --backtitle "Oh no\!" --title "Are you sure?" --yes-label "Remove it\!" --no-label "Back" --yesno "Are you sure to Remove Void?" 0 0 )
 then 
 tput cnorm
-./runtime/undistro/void.sh
+./runtime/remove.sh --void.sh
 else
 ./rm.sh
 fi 

@@ -1,2 +1,2 @@
 #!/bin/env bash
-sh utils/unins-phs1.sh
+bash utils/unins-phs1.sh

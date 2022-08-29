@@ -6,7 +6,7 @@ HEIGHT=0
 prox=$PID
 name=$(whoami)
 #Randomizer
-ram=$( shuf -i  1-10 -n 1 )
+ram=$( shuf -i  1-11 -n 1 )
 #ExitVars
 
 : ${DIALOG_OK=0}

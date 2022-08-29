@@ -3,7 +3,7 @@ Proot-distro
 About Text
 
 ============================
-Version : 2.2-unstable
+Version : 2.3-unstable
 
 WARNING, THIS IS AN UNSTABLE VERSION OF THE GIT
 REPOSITORY, CLONE THE MAIN VERSION FOR STABLE RELEASE
