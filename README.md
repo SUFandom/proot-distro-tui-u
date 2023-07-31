@@ -53,7 +53,7 @@ Some Termux Binary packages like `dialog` , `proot`, `proot-distro` are minimall
 
 The script wont try to install it for you for security and ensuring stability reasons. I prefer you should do your own here to install packages. **Don't be lazy**.
 
-Also this unstable version will finally have [Pardus](https://en.wikipedia.org/wiki/Pardus_(operating_system)), a Turkish Government Linux Distribution added to catalog (x64 Devices only, `arm64`, `intel64:i686`, and `amd64`)
+Also this unstable version will finally have [Pardus](https://en.wikipedia.org/wiki/Pardus_(operating_system)), a Turkish Government Linux Distribution added to catalog (x64 Devices only, `arm64`, `intel:i686`, and `amd64`)
 
 
 
