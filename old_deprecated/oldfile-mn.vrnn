@@ -1,0 +1,1172 @@
+#!/bin/bash 
+
+# 2.3-unstable_shogun
+
+
+
+# This is a wild improvement of Proot-Distro-TUI-U
+# Hope this works properly ~ SUFandom
+
+# This is my first proper attempt of Monolithic script
+# And some features would also cause havoc probably
+
+# SET DIR LOC
+export PROOT_PROFILE="/data/data/com.termux/files/usr/etc/proot-distro"
+export PROOT_DISTS="/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs"
+# To be honest, i wish bash variables can be immutable lol
+# Also im certain this wont be used for now
+ALPINE_SRC="sources/alpine"
+ARCH_SRC="sources/arch"
+DEBIAN_SRC="sources/debian"
+FEDORA_SRC="sources/fedora"
+MANJARO_SRC="sources/manjaro"
+PARDUS_SRC="sources/pardus"
+UBUNTU_SRC="sources/ubuntu"
+
+# I added this because idk why
+function msg () {
+    echo  "$1"
+}
+
+# Color Variables
+
+RED="\e[31m"
+GREEN="\e[32m"
+ENDCOLOR="\e[0m"
+
+# Barrier
+function barrier () {
+    msg "==============================================================="
+}
+
+
+# Trap Set
+function unset_variables () {
+    unset ex package path pkg RED GREEN ENDCOLOR isAMD64 isARM32 isINTEL32 isPWNCHK
+}
+
+trap unset_variables EXIT
+
+
+# VARIABLE
+export ex=0
+
+# Variable 
+
+package=("proot" "proot-distro" "dialog" "wget" "unzip" "file")
+for pkg in "${package[@]}"; do 
+    printf "Checking if %s is present...\n" "$pkg"
+    path=$(command -v "$pkg" 2>/dev/null)
+
+if [ -n "$path" ]; then
+    msg "Found $pkg, Installed, Located at: $path"
+    sleep 2
+else 
+    msg "$pkg Not Found, please try to install it..."
+    sleep 2
+    ex=1
+fi
+done
+
+if [ "$ex" -eq 1 ]; then 
+    msg ""
+    msg "Please try to install the following requirements that you need to proceed. Then Run this script..."
+    exit 1 
+fi 
+
+# Functions Loading
+
+function plant () {
+    touch ~/.id
+}
+
+function timed_splash () {
+    dialog --backtitle "$1" --title "$2" --infobox "$3" 0 0
+    sleep "$4"
+}
+
+function yesno_diag () {
+    # Yes no function because im lazy as fuuuuuuuu
+    # ALSO: ${6:-0} set is quite convinent, thanks phind
+    width=${6:-0}
+    height=${7:-0}
+    dialog --backtitle "$1" --title "$2" --yes-label "$3" --no-label "$4" --yesno "$5" $width $height 
+}
+
+function license_to_user_agree () {
+    # License agreement, made with ChatGPT :skull:
+    if [ ! -e $HOME/.id ]
+        then 
+        yesno_diag "Agree the License Agreement - User client side" "Agree the License (and disclaimer) to Users" "Agree & Continue" "Disagree and Exit" "$(cat assets/LICENSE_AGREEMENT.txt)" "30" "80"
+        local xv=$?
+        case $xv in 
+            0)
+                plant
+                menu
+                ;;
+            1)
+                exit
+                ;;
+        esac 
+    fi 
+    menu 
+}
+function welcome () {
+    timed_splash "Proot-distro-tui-u" "Welcome" "Welcome to the Development version of PRoot-distro-tui-u\n\nVersion 2.3-unstable_shogun" "5"
+    license_to_user_agree
+}
+
+
+function architecture_count () {
+    # Count Library
+    # So i dont have to manually do the change inside the main function
+    if [ "$(uname -m)" == "armv7l" ] || [ "$(uname -m)" == "armv7a" ] || [ "$(uname -m)" == "armv8l" ] ; then
+        msg "ARMv7: 4 in library"
+    fi 
+    if [ "$(uname -m)" == "aarch64" ] || [ "$(uname -m)" == "arm64" ] || [ "$(uname -m)" == "armv8a" ] || [ "$(uname -m)" == "armv8-a" ]; then
+        msg "ARM64 Bit: 11 in Library"
+    fi 
+    if [ "$(uname -m)" == "amd64" ] || [ "$(uname -m)" == "x86_64" ]; then 
+        msg "AMD64(x86_64) : 6 in library"
+    fi 
+    if [ "$(uname -m)" == "i686" ] ; then 
+        msg "Intel 32 bit(i686): 3 in library"
+    fi 
+    if [ "$(uname -m)" == "unknown" ] || [ "$(uname -m)" == "" ] || [ "$(uname -m)" == " " ] ; then 
+        msg "No Architecture supported in library, Your arch is: $(uname -m)"
+        msg "If empty means uname can't read your processor info properly"
+        msg "Report this to the Developer for additional help"
+    fi
+}
+
+# I will prioritize having these custom tarball installs later, the code that would make this work
+# are temporarily removed because it tends to fail and deadline is fast approaching!!!...
+
+# function cust_tarball () {
+    ## Warning : If you prefer to use non-termux tarball source, then make sure its not riddled with dangerous code.
+    # I prefer not downloading a tarball that requires run_proot_cmd unless if necessary
+    # Also ${} (array) method doesn't work on dialog so i might try a different approach
+    # And the 'no run_proot_cmd' policy will be removed soon, im trying to study some potential vulnerability issues with this thing, i would rather allow the use cases of run_proot_cmd by the termux devs
+# }
+
+# DONOT ADD the perma-configure's function code for now as it would destroy the termux's /var at the moment, prioritize it in 2.4
+# WARN: Users to have the feature coming soon instead
+
+function perma-configure () {
+    broadcast_msgbox "Coming Soon - PRoot-distro-tui-u 2.3-unstable_shogun" "Oops" "This feature is coming soon, but its currently on the works right now.\n\nPerma-configure just serves to act as a feature that would be permanently saved in a config file so you wont have to go reconfig every session."
+    menu 
+}
+
+function chk_fle () {
+    # Function check for the srcmn function
+    if [ -e $PROOT_PROFILE/VERSION ]; then
+        msg "Installed"
+    else
+        msg "Not Installed"
+    fi
+}
+
+function chk_fle_rm () {
+    # Function check for the srcmn function
+    # BTW they're the same but the response are modified
+    if [ -e $PROOT_PROFILE/VERSION ]; then
+        msg "Ready to be Removed"
+    else
+        msg "Already Removed"
+    fi
+}
+
+function chk_fl_inst () {
+    # Checks if files are installed properly
+    miss=0
+    present=0
+        distlist_chk=("$PROOT_PROFILE/alpine-arm64.sh" "$PROOT_PROFILE/alpine-arm32.sh" "$PROOT_PROFILE/alpine-amd64.sh" "$PROOT_PROFILE/alpine-i686.sh" "$PROOT_PROFILE/archlinux-arm32.sh" "$PROOT_PROFILE/archlinux-arm64.sh" "$PROOT_PROFILE/debian-arm64.sh" "$PROOT_PROFILE/debian-amd64.sh" "$PROOT_PROFILE/debian-arm32.sh" "$PROOT_PROFILE/debian-i686.sh" "$PROOT_PROFILE/fedora-amd64.sh" "$PROOT_PROFILE/fedora-arm64.sh" "$PROOT_PROFILE/manjaro-arm64.sh" "$PROOT_PROFILE/pardus-amd64.sh" "$PROOT_PROFILE/pardus-arm64.sh" "$PROOT_PROFILE/pardus-i686.sh" "$PROOT_PROFILE/ubuntu-amd64.sh" "$PROOT_PROFILE/ubuntu-arm32.sh" "$PROOT_PROFILE/ubuntu-arm64.sh" "$PROOT_PROFILE/VERSION" )
+        for dim in "${distlist_chk[@]}" ; do 
+            if [ -e "$dim" ]; then
+                present=$((present + 1 ))
+                else 
+                miss=$((miss + 1 ))
+            fi 
+            done 
+        msg "Present: $present"
+        msg "Absent: $miss."
+        msg "NOTE: Some 'absent' files might be unsupported on your system, so that's why its not there"
+        msg "DONOT Submit any bug report regarding this"
+        msg "Architecture: $(uname -m)"
+        msg ""
+        msg "Recommended by the Architecture of your device: $(architecture_count)"
+        sleep 5
+}
+
+function srcmn () {
+    # Distro Patcher
+        exec 3>&1
+            mxn=$(dialog \
+                        --backtitle "Inject Distro Library - PRoot-Distro-tui-u 2.3-unstable_shogun" \
+                        --title "Inject or Remove Files" \
+                        --menu "Select option of what you're going to do" 0 0 0 \
+                        "Install Files Necessary" "[Status: $(chk_fle)]. Installs Files Necessary for this script to work" \
+                        "Remove Files" "[Status: $(chk_fle_rm)]. Removes file in your $PROOT_PROFILE" \
+                        "Check if Installed Properly" "Checks if the scripts are installed Properly" 3>&1 1>&2 2>&3)
+                    local xc=$?
+                    exec 3>&-
+                    case $xc in 
+                        1)
+                            menu
+                            ;;
+                        9)
+                            clear
+                            msg "SIGKILL Detected, REVERTING TO EXIT"
+                            exit
+                            ;;
+                    esac
+                    case $mxn in 
+                        "Install Files Necessary")
+                            ins_fle_nes_dlg
+                            ;;
+                        "Remove Files")
+                            rem_fle_nls_dlg
+                            ;;
+                        "Check if Installed Properly")
+                            chk_fl_inst
+                            srcmn 
+                            ;;
+                    esac
+}
+
+function ins_fle_nes_dlg () {
+    # A dialog to notify that he is now attempting to install the file and some warnings
+    yesno_diag "Confirmation - PRoot-distro-tui-u 2.3-unstable_shogun" "Confirm" "Extract it" "Abort" "Are you sure that you want to extract files to:\n$PROOT_PROFILE\n\nYour architecture: $(uname -m)\nDebug by architecture_count function: $(architecture_count)"
+    xvh=$(uname -m)
+    local xb=$?
+    case $xb in 
+        0)
+            export_file "$xvh"
+            ;;
+        1)
+            menu 
+            ;;
+    esac 
+}
+
+function rem_fle_nls_dlg () {
+    # A dialog to notify the user is about to remove distros
+    yesno_diag "Confirmation - PRoot-distro-tui-u 2.3-unstable_shogun" "Comfirm" "[!] DELETE IT" "Go Back" "Are you sure to delete files required for this script to work?"
+    local xb=$?
+    case $xb in 
+        0)
+            wipe_file
+            ;; 
+        1)
+            menu
+            ;;
+    esac
+}
+
+function about () {
+    broadcast_msgbox "About - PRoot-distro-tui-u (2.3-unstable_shogun)" "About" "About this software\n\nPRoot-distro-tui-u\nAuthor: SUFandom\nSCript Version: $(cat VERSION)\nLibrary Version: $(cat sources/VERSION)\nCodename: Shogun\nState: Unstable\n\nCoded in: June 06,2023\nArchitecture: $(uname -a)"
+    menu 
+}
+
+function architecture_info () {
+    broadcast_msgbox "About their device - PRoot-distro-tui-u (2.3-unstable_shogun)" "Architecture info" "CPU Architecture: $(uname -m)\nOPerating System: $(uname -o)\nProcessor Name: $(lscpu | grep "Model name" | sed -r 's/Model name:\s+//')"
+    menu 
+}
+
+function distro_man () {
+    # A function that installs/removes/purge distros
+    exec 3>&1
+    menu_man=$(dialog \
+                --backtitle "Distro Manager - PRoot-distro-tui-u 2.3-unstable_shogun" \
+                --title "Distro Manager Menu" \
+                --menu "Select an Option\n\nInstall a Distro - Installing Distros in your system, it can be Default Termux or the custom provided\n\nRun a Distro - [PRONE TO BREAK TEMPORARILY] Run distros that are installed in your system\n\nRemove a Distro - Delete your distros, can be purged without the help of proot-distro to properly delete. [BACKUP YOUR DATA!!!]" 0 0 0 \
+                "Install a Distro" "Install DIstros in your system" \
+                "Run a Distro" "Run a Distro in your system" \
+                "Remove a Distro" "Removes a Distro in your system" \
+                3>&1 1>&2 2>&3 )
+            local at=$?
+            exec 3>&- 
+            case $at in 
+                1)
+                    menu
+                    ;;
+                9)
+                    clear
+                    msg "SIGKILL DETECTED, REVERTING TO EXIT"
+                    exit 
+                    ;;
+            esac
+            case $menu_man in 
+                "Install a Distro")
+                    ins_dlg_men
+                    ;;
+            esac
+}
+
+function chk_vsn () {
+    # Check if the files are installed
+    if [ -e $PROOT_PROFILE/VERSION ]
+        then
+            cat $PROOT_PROFILE/VERSION
+        else
+            msg "NOT INSTALLED"
+    fi 
+}
+
+function ins_dlg_men () {
+    # Install Dialog Menu
+    exec 3>&1 
+    menu_ins_man=$(dialog \
+                    --backtitle "Install Distro - PRoot-distro-tui-u 2.3-unstable_shogun" \
+                    --title "Install" \
+                    --menu "Select operation\n\nCustom Version ID: $(chk_vsn)\n\n(Custom Imports are coming soon)" 0 0 0 \
+                    "Install via Default Channel" "Install Proot-distro's DIstro" \
+                    "Install via customised Default Channel" "Install via PRoot-distro's Customised Default Channel" \
+                    3>&1 1>&2 2>&3 )
+                local enu=$?
+                exec 3>&-
+                case $enu in 
+                    1)
+                        distro_man
+                        ;;
+                    9)
+                        clear 
+                        msg "SIGKILL DETECTED, Reverting to EXIT"
+                        exit
+                        ;;
+                esac
+                case $menu_ins_man in 
+                    "Install via Default Channel")
+                        default_install_channel
+                        ;;
+                    "Install via Customised Channel")
+                        broadcast_msgbox "WARNING" "WARNING!" "USE CASE OF CUSTOM CHANNEL REQUIRES THE SOURCES TO BE INSTALLED AT YOUR SYSTEM\n\nIF YOU HAVEN'T DONE THAT, GO BACK TO MENU AND THEN INSTALL IT THERE"
+                        custom_install_channel
+                        ;;
+                esac 
+}
+
+function chk_distro_default () {
+    # Checks if Defaults are installed
+    if [ "$1" == "alpine" ]; then
+        if [ -e $PROOT_DISTS/alpine ]; then 
+        msg "True"
+        else
+        msg "False"
+        fi 
+    fi 
+    if [ "$1" == "archlinux" ] ; then 
+        if [ -e $PROOT_DISTS/archlinux ]; then
+            msg "True"
+            else 
+            msg "False"
+        fi 
+    fi 
+    if [ "$1" == "debian" ]; then 
+        if [ -e $PROOT_DISTS/debian ]; then 
+            msg "True"
+            else 
+            msg "False"
+        fi 
+    fi 
+    if [ "$1" == "fedora" ]; then 
+        if [ -e $PROOT_DISTS/fedora ]; then 
+            msg "True"
+            else 
+            msg "False"
+        fi 
+    fi 
+    if [ "$1" == "manjaro" ]; then 
+        if [ -e $PROOT_DISTS/manjaro-aarch64 ]; then 
+            msg "True"
+            else 
+            msg "False"
+        fi 
+    fi 
+    if [ "$1" == "opensuse" ]; then
+        if [ -e $PROOT_DISTS/opensuse ]; then 
+            msg "True"
+            else 
+            msg "False"
+        fi 
+    fi 
+    if [ "$1" == "pardus" ]; then 
+        if [ -e $PROOT_DISTS/pardus ]; then 
+            msg "True"
+            else 
+            msg "False"
+        fi 
+    fi 
+    if [ "$1" == "ubuntu" ]; then 
+        if [ -e $PROOT_DISTS/ubuntu ]; then 
+            msg "True"
+            else 
+            msg "False"
+        fi 
+    fi 
+    if [ "$1" == "void" ]; then 
+        if [ -e $PROOT_DISTS/void ]; then
+            msg "True"
+            else 
+            msg "False"
+        fi 
+    fi 
+}
+
+function default_install_channel () {
+    # Default install channel
+    exec 3>&1 
+    def_menu=$(dialog \
+                    --backtitle "Install Default Termux Distro Channel - PRoot-distro-tui-u 2.3-unstable_shogun" \
+                    --title "Select Distro" \
+                    --menu "Select distros set by default under Termux Developers\n\nREMINDER: Theproot-distro will automatically tend to chooswe what version id is your distro, depending if you updated proot-distro or not" 0 0 0 \
+                    "Alpine Linux" "Is Installed: $(chk_distro_default alpine)" \
+                    "Arch Linux" "Is Installed: $(chk_distro_default archlinux)" \
+                    "Debian" "Is Installed: $(chk_distro_default debian)" \
+                    "Fedora" "Is Installed: $(chk_distro_default fedora)" \
+                    "Manjaro" "Is Installed: $(chk_distro_default manjaro)" \
+                    "OpenSUSE" "Is Installed: $(chk_distro_default opensuse)" \
+                    "Pardus" "Is Installed: $(chk_distro_default pardus)" \
+                    "Ubuntu" "Is Installed: $(chk_distro_default ubuntu)" \
+                    "Void" "Is Installed: $(chk_distro_default void)" \
+                    3>&1 1>&2 2>&3 )
+                local nnn=$?
+                exec 3>&-
+                case $nnn in 
+                    1)
+                        distro_man
+                        ;;
+                    9)
+                        clear 
+                        msg "SIGKILL DETECTED, REVERTING TO EXIT NOW!"
+                        exit 
+                        ;;
+                esac 
+                case $def_menu in 
+                # I hate this journey
+                    "Alpine Linux")
+                        alp_ins
+                        ;;
+                    "Arch Linux")
+                        arch_ins
+                        ;;
+                    "Debian")
+                        deb_ins
+                        ;;
+                    "Fedora")
+                        fed_ins
+                        ;;
+                    "Manjaro")
+                        manjaro_ins
+                        ;;
+                    "OpenSUSE")
+                        opsus_ins
+                        ;;
+                    "Pardus")
+                        par_ins
+                        ;;
+                    "Ubuntu")
+                        ubu_ins
+                        ;;
+                    "Void")
+                        void_ins
+                        ;;
+                esac
+}
+
+#
+#
+function alp_ins () {
+    # Install Alpine Distro
+    # But First, check!
+    if [ -e $PROOT_PROFILE/alpine.sh ]; then 
+        msg "Found"
+        clear
+        msg "Initializing Instalation"
+        proot-distro install alpine # Then install
+            if [ -e $PROOT_DISTS/alpine ]; then 
+                broadcast_msgbox "Alpine Installed" "Congrats!" "Alpine has Been installed!"
+                distro_man
+                else 
+                yesno_diag "ERROR!" "Could not found Distro: Alpine" "Retry" "Abort" "Could not find Alpine Linux, there might be an error.\n\nYou can Retry to install, but make sure you have a fast internet, or Abort"
+                local xa=$?
+                case $xa in
+                    0)
+                        clear
+                        msg "Retrying Installation in 5 seconds..."
+                        sleep 5
+                        alp_ins
+                        ;;
+                    1)
+                        distro_man
+                        ;;
+                esac
+            fi 
+        else 
+        broadcast_msgbox "ERROR - PRoot-distro-tui-u 2.3-unstable_shogun" "DID NOT FOUND ALPINE SCRIPT" "The File:\n$PROOT_PROFILE/alpine.sh\n\nIs Missing and the script can't try to install it"
+        default_install_channel
+    fi 
+}
+
+function arch_ins () {
+    # Install Archlinux Distro
+    # But First, check!
+    if [ -e $PROOT_PROFILE/archlinux.sh ]; then 
+        msg "Found"
+        clear
+        msg "Initializing Instalation"
+        proot-distro install archlinux # Then install
+            if [ -e $PROOT_DISTS/archlinux ]; then 
+                broadcast_msgbox "Arch Installed" "Congrats!" "Alpine has Been installed!"
+                distro_man
+                else 
+                yesno_diag "ERROR!" "Could not found Distro: Archlinux" "Retry" "Abort" "Could not find Archlinux Linux, there might be an error.\n\nYou can Retry to install, but make sure you have a fast internet, or Abort"
+                local xa=$?
+                case $xa in
+                    0)
+                        clear
+                        msg "Retrying Installation in 5 seconds..."
+                        sleep 5
+                        arch_ins
+                        ;;
+                    1)
+                        distro_man
+                        ;;
+                esac
+            fi 
+        else 
+        broadcast_msgbox "ERROR - PRoot-distro-tui-u 2.3-unstable_shogun" "DID NOT FOUND ARCHLINUX SCRIPT" "The File:\n$PROOT_PROFILE/archlinux.sh\n\nIs Missing and the script can't try to install it"
+        default_install_channel
+    fi 
+}
+
+function deb_ins () {
+    # Install Debian Distro
+    # But First, check!
+    if [ -e $PROOT_PROFILE/debian.sh ]; then 
+        msg "Found"
+        clear
+        msg "Initializing Instalation"
+        proot-distro install debian # Then install
+            if [ -e $PROOT_DISTS/debian ]; then 
+                broadcast_msgbox "Debian Installed" "Congrats!" "Debian has Been installed!"
+                distro_man
+                else 
+                yesno_diag "ERROR!" "Could not found Distro: Debian" "Retry" "Abort" "Could not find Debian Linux, there might be an error.\n\nYou can Retry to install, but make sure you have a fast internet, or Abort"
+                local xa=$?
+                case $xa in
+                    0)
+                        clear
+                        msg "Retrying Installation in 5 seconds..."
+                        sleep 5
+                        deb_ins
+                        ;;
+                    1)
+                        distro_man
+                        ;;
+                esac
+            fi 
+        else 
+        broadcast_msgbox "ERROR - PRoot-distro-tui-u 2.3-unstable_shogun" "DID NOT FOUND DEBIAN SCRIPT" "The File:\n$PROOT_PROFILE/debian.sh\n\nIs Missing and the script can't try to install it"
+        default_install_channel
+    fi 
+}
+
+function fed_ins () {
+    # Install Fedora Distro
+    # But First, check!
+    if [ -e $PROOT_PROFILE/fedora.sh ]; then 
+        msg "Found"
+        clear
+        msg "Initializing Instalation"
+        proot-distro install fedora # Then install
+            if [ -e $PROOT_DISTS/fedora ]; then 
+                broadcast_msgbox "Fedora Installed" "Congrats!" "Fedora has Been installed!"
+                distro_man
+                else 
+                yesno_diag "ERROR!" "Could not found Distro: Fedora" "Retry" "Abort" "Could not find Fedora Linux, there might be an error.\n\nYou can Retry to install, but make sure you have a fast internet have a compatible Architecture, or Abort the process"
+                local xa=$?
+                case $xa in
+                    0)
+                        clear
+                        msg "Retrying Installation in 5 seconds..."
+                        sleep 5
+                        fed_ins
+                        ;;
+                    1)
+                        distro_man
+                        ;;
+                esac
+            fi 
+        else 
+        broadcast_msgbox "ERROR - PRoot-distro-tui-u 2.3-unstable_shogun" "DID NOT FOUND FEDORA SCRIPT" "The File:\n$PROOT_PROFILE/fedora.sh\n\nIs Missing and the script can't try to install it"
+        default_install_channel
+    fi 
+}
+
+function manjaro_ins () {
+    # Install Manjaro Distro
+    # But First, check!
+    if [ $(uname -m) == "aarch64" ] || [ $(uname -m) == "arm64" ]; then
+        if [ -e $PROOT_PROFILE/debian.sh ]; then 
+            msg "Found"
+            clear
+            msg "Initializing Instalation"
+            proot-distro install manjaro-aarch64 # Then install
+                if [ -e $PROOT_DISTS/manjaro-aarch64 ]; then 
+                    broadcast_msgbox "Manjaro Installed" "Congrats!" "Manjaro has Been installed!"
+                    distro_man
+                    else 
+                    yesno_diag "ERROR!" "Could not found Distro: Manjaro" "Retry" "Abort" "Could not find Manjaro Linux, there might be an error.\n\nYou can Retry to install, but make sure you have a fast internet, or Abort"
+                    local xa=$?
+                    case $xa in
+                        0)
+                            clear
+                            msg "Retrying Installation in 5 seconds..."
+                            sleep 5
+                            manjaro_ins
+                            ;;
+                        1)
+                            distro_man
+                            ;;
+                    esac
+                fi 
+            else 
+        broadcast_msgbox "ERROR - PRoot-distro-tui-u 2.3-unstable_shogun" "DID NOT FOUND MANJARO SCRIPT" "The File:\n$PROOT_PROFILE/manjaro-aarch64.sh\n\nIs Missing and the script can't try to install it"
+        default_install_channel
+        fi 
+    else 
+    broadcast_msgbox "ERROR - PRoot-distro-tui-u 2.3-unstable_shogun" "YOUR CPU DOES NOT SUPPORT MANJARO, USE ARM64 CAPAPBLE DEVICE!"
+    default_install_channel
+    fi 
+}
+
+function opsus_ins () {
+    # Install OpenSUSE Distro
+    # But First, check!
+    if [ -e $PROOT_PROFILE/opensuse.sh ]; then 
+        msg "Found"
+        clear
+        msg "Initializing Instalation"
+        proot-distro install opensuse # Then install
+            if [ -e $PROOT_DISTS/opensuse ]; then 
+                broadcast_msgbox "OpenSUSE Installed" "Congrats!" "OpenSUSE has Been installed!"
+                distro_man
+                else 
+                yesno_diag "ERROR!" "Could not found Distro: OpenSUSE" "Retry" "Abort" "Could not find OpenSUSE Linux, there might be an error.\n\nYou can Retry to install, but make sure you have a fast internet, and compatible CPU, or Abort"
+                local xa=$?
+                case $xa in
+                    0)
+                        clear
+                        msg "Retrying Installation in 5 seconds..."
+                        sleep 5
+                        opsus_ins
+                        ;;
+                    1)
+                        distro_man
+                        ;;
+                esac
+            fi 
+        else 
+        broadcast_msgbox "ERROR - PRoot-distro-tui-u 2.3-unstable_shogun" "DID NOT FOUND OPENSUSE SCRIPT" "The File:\n$PROOT_PROFILE/opensuse.sh\n\nIs Missing and the script can't try to install it"
+        default_install_channel
+    fi 
+}
+
+function par_ins () {
+    # Install Ubuntu Distro
+    # But First, check!
+    if [ -e $PROOT_PROFILE/pardus.sh ]; then 
+        msg "Found"
+        clear
+        msg "Initializing Instalation"
+        proot-distro install pardus # Then install
+            if [ -e $PROOT_DISTS/pardus ]; then 
+                broadcast_msgbox "Pardus Installed" "Congrats!" "Pardus has Been installed!"
+                distro_man
+                else 
+                yesno_diag "ERROR!" "Could not found Distro: Pardus" "Retry" "Abort" "Could not find Pardus Linux, there might be an error.\n\nYou can Retry to install, but make sure you have a fast internet, a compatible CPU, or Abort"
+                local xa=$?
+                case $xa in
+                    0)
+                        clear
+                        msg "Retrying Installation in 5 seconds..."
+                        sleep 5
+                        par_ins
+                        ;;
+                    1)
+                        distro_man
+                        ;;
+                esac
+            fi 
+        else 
+        broadcast_msgbox "ERROR - PRoot-distro-tui-u 2.3-unstable_shogun" "DID NOT FOUND UBUNTU SCRIPT" "The File:\n$PROOT_PROFILE/pardus.sh\n\nIs Missing and the script can't try to install it"
+        default_install_channel
+    fi 
+}
+
+function ubu_ins () {
+    # Install Ubuntu Distro
+    # But First, check!
+    if [ -e $PROOT_PROFILE/ubuntu.sh ]; then 
+        msg "Found"
+        clear
+        msg "Initializing Instalation"
+        proot-distro install ubuntu # Then install
+            if [ -e $PROOT_DISTS/ubuntu ]; then 
+                broadcast_msgbox "Ubuntu Installed" "Congrats!" "Ubuntu has Been installed!"
+                distro_man
+                else 
+                yesno_diag "ERROR!" "Could not found Distro: Ubuntu" "Retry" "Abort" "Could not find Ubuntu Linux, there might be an error.\n\nYou can Retry to install, but make sure you have a fast internet, a compatible CPU, or Abort"
+                local xa=$?
+                case $xa in
+                    0)
+                        clear
+                        msg "Retrying Installation in 5 seconds..."
+                        sleep 5
+                        ubu_ins
+                        ;;
+                    1)
+                        distro_man
+                        ;;
+                esac
+            fi 
+        else 
+        broadcast_msgbox "ERROR - PRoot-distro-tui-u 2.3-unstable_shogun" "DID NOT FOUND UBUNTU SCRIPT" "The File:\n$PROOT_PROFILE/ubuntu.sh\n\nIs Missing and the script can't try to install it"
+        default_install_channel
+    fi 
+}
+
+function void_ins () {
+    # Install Void Distro
+    # But First, check!
+    if [ -e $PROOT_PROFILE/void.sh ]; then 
+        msg "Found"
+        clear
+        msg "Initializing Instalation"
+        proot-distro install void # Then install
+            if [ -e $PROOT_DISTS/void ]; then 
+                broadcast_msgbox "Void Installed" "Congrats!" "Void has Been installed!"
+                distro_man
+                else 
+                yesno_diag "ERROR!" "Could not found Distro: Void" "Retry" "Abort" "Could not find Void Linux, there might be an error.\n\nYou can Retry to install, but make sure you have a fast internet, a compatible CPU, or Abort"
+                local xa=$?
+                case $xa in
+                    0)
+                        clear
+                        msg "Retrying Installation in 5 seconds..."
+                        sleep 5
+                        void_ins
+                        ;;
+                    1)
+                        distro_man
+                        ;;
+                esac
+            fi 
+        else 
+        broadcast_msgbox "ERROR - PRoot-distro-tui-u 2.3-unstable_shogun" "DID NOT FOUND VOID SCRIPT" "The File:\n$PROOT_PROFILE/void.sh\n\nIs Missing and the script can't try to install it"
+        default_install_channel
+    fi 
+}
+
+function custom_install_channel () {
+    # Custom Install Channel
+    # This is the part where users can choose architectures to install
+    # But there will still be errors that may be provoked by the user
+    # So add some warning to the user about the compatibility
+    # Adding more Menu would be great to group them and aid them
+    # But i think its better it should be called under $1, $2 variable because im tired of
+    # Planting function :skull:
+    exec 3>&1
+    lvrn=$(dialog \
+            --backtitle "Custom Install Channel - PRoot-distro-tui-u 2.3-unstable_shogun" \
+            --title "Custom PRoot Distro CHannel" \
+            --menu "NOTE: The hosting service is still by termux, but this area just 'forces' termux proot-distro to install a distro specified for supported architecture under backwards compatibility\nStatus:\n\n $(custom_present)\n\n $(chk_updte)\n\nAlso if you're looking for Void, and OpenSUSE, sorry but they are stuck at the Default channel for safety reasons" 0 0 0 \
+            "Alpine" "The Bleeding Edge" \
+            "Archlinux" "I use Arch BTW" \
+            "Debian" "Debian Stable" \
+            "Fedora" "Fedora Hat" \
+            "Manjaro" "ARM64 ONLY" \
+            "Pardus" "A turkish based Distro" \
+            "Ubuntu" "Ubuntu Snap" \
+            3>&1 1>&2 2>&3 )
+            local vvvb=$?
+            exec 3>&-
+            case $vvvb in 
+                1)
+                    distro_man
+                    ;;
+                9)
+                    clear
+                    msg "SIGKILL Detected, SWITCHING TO EXIT"
+                    exit 
+                    ;;
+            esac 
+            case $lvrn in 
+                "Alpine")
+                    alp_custom_menu
+                    ;;
+            esac
+}
+
+function alp_custom_menu () {
+    # Alpine popup menu check
+    exec 3>&1
+    menu_alp=$(dialog \
+                --backtitle "Alpine Distro - Custom Mode Install - PRoot-distro-tui-u" \
+                --title "Selection:Alpine Linux" \
+                --menu "Alpine Linux\n\nThe Lightweight Linux Distro, yet bleeding Edge.\n\nTarball Version(Not the Distro Version): 3.10.0\nAvailable Architectures: $(std_custom_distro_arch_check alpine)\n\nYour Device Architecture: $(uname -m)\n<!>Make sure you are installing a distro specified to your device's cpu, do not throw any complaint that you can't install a x86_64 on an ARM device on the issues page or i will put you on to the shame of pin area." 0 0 0  \
+                "Install AMD64" "Installs Standard Architecture: AMD64 (x86_64)" \
+                "Install ARM" "Installs Legacy Architecture: ARM (armv7)" \
+                "Install Aarch64 (ARM64)" "Installs Standard Architecture: ARM64 (armv8a/aarch64)" \
+                "Instal i686" "Installs Legacy Architecture: Intel x86 (i686)" \
+                3>&1 1>&2 2>&3 )
+            local xc=$?
+            exec 3>&-
+            case $xc in 
+                1)
+                    custom_install_channel
+                    ;;
+            esac 
+            case $menu_alp in 
+                "Install AMD64")
+                    yesno_diag "Confirmation" "Ready?" "Install" "Back" ""
+}
+
+function disarch () {
+    # Checks whether the selected distro its supported
+    # NOTE: THIS FUNCTION SHOULD SERVE AT 
+    # THE CASE DIALOG AREA OF THE SELECTED DISTRO TO PREVENT EXTREME USE OF EXLICIT FUNCTION
+    # EVEN THO THE CODE BASE IS ALREADY RIDDLED SUCH
+    if [  ]
+}
+
+function std_custom_distro_arch_check {
+    # Checks what availabe architecture is in that specific distro
+    # Only for Custom Library area
+    # For People/Devs who want to edit this, You can just add the function to default channel if you want
+    if [ "$1" == "alpine" ]; then 
+        msg "AMD64 (x86_64), ARM(armhf/armv7), Aarch64(ARM64), Intel 32 (i686)"
+    fi 
+    if [ "$1" == "arch" ]; then 
+        msg "ARM(armhf/armv7), Aarch64(ARM64)"
+    fi 
+    if [ "$1" == "debian" ]; then 
+        msg "AMD64 (x86_64), ARM(armhf/armv7), Aarch64(ARM64), Intel 32 (i686)"
+    fi 
+    if [ "$1" == "fedora" ]; then 
+        msg "AMD64 (x86_64), Aarch64(ARM64)"
+    fi 
+    if [ "$1" == "manjaro" ]; then 
+        msg "Aarch64(ARM64)"
+    fi 
+    if [ "$1" == "pardus" ]; then 
+        msg "AMD64 (x86_64), Aarch64(ARM64), Intel 32 (i686)"
+    fi
+    if [ "$1" == "ubuntu" ]; then 
+        msg "AMD64 (x86_64), ARM(armhf/armv7), Aarch64(ARM64)"
+    fi
+}
+
+function chk_updte () {
+    # Checks if the version is the same
+    # But first, it needs to know if the files are installed
+    # Thn compare
+    if [ -e $PROOT_PROFILE/VERSION ]; then 
+        if [ "$(cat $PROOT_PROFILE/VERSION)" == "$(cat sources/VERSION)" ]; then 
+            msg "The Package is up to date. Current and Packed: ($(cat sources/VERSION))"
+            else 
+                msg "Current installed: $(cat $PROOT_PROFILE/VERSION), IN THIS PACKAGE: $(cat sources/VERSION)"
+        fi 
+        else 
+            msg "FILES ARE NOT INSTALLED! PLEASE TRY TO INSTALL THEM FIRST!!!!"
+    fi
+}
+
+function custom_present () {
+    # Checks if the Custom version is installed and working
+    if [ -e $PROOT_PROFILE/VERSION ]; then 
+        msg "Installed, Version: $(cat "$PROOT_PROFILE/VERSION")"
+    fi
+}
+
+#
+#
+function menu () {
+    exec 3>&1
+    men=$(dialog \
+            --backtitle "Menu - Proot-distro-tui-u (Version 2.3-unstable_shogun)" \
+            --title "Main menu of PRoot-distro-tui-u" \
+            --menu "Welcome to PRoot-distro-tui-u\nVersion 2.3-unstable_shogun\n\nSystem Report:\nArchitecture: $(uname -m)\nOperating System: $(uname -o)\nKernel: $(uname -s)\n\nRemember to keep proot and proot-distro updated :D" 0 0 0\
+            "Install and/or Update Scripts" "Install Scripts to make this utility work" \
+            "Add Script to bin" "Adds PRoot-distro-tui to Termux's Bin so you wont need to go to cloned dir again, and simply launch it directly via terminal" \
+            "Distro Manager" "Manage your Distro" \
+            "Configure" "Configure PRoot-distro-tui-u" \
+            "Perma-configure" "(Coming soon) Configure PRoot-distro-tui-u and save it permanently" \
+            "Help" "Help Page of this software" \
+            "About" "About page of this software" \
+            "Architecture Info" "Architecture info" \
+            3>&1 1>&2 2>&3)
+            local fx=$?
+            exec 3>&-
+            case $fx in
+                1)
+                    exit 1
+                    ;;
+                9)
+                    echo "SIGKILL DETECTED, REVERT TO EXIT FLAG!"
+                    exit 1;;
+            esac 
+            case $men in 
+                "Install and/or Update Scripts")
+                    srcmn
+                    ;;
+                "Distro Manager")
+                    distro_man
+                    ;;
+                "Configure")
+                    config_box
+                    ;;
+            esac
+}
+
+function config_box () {
+    # Configuration Box 
+    # This is here to set temporary configuration of PRoot-distro-tui-u
+    # Since Perma-configure is currently broken, this is the alternative
+    exec 3>&1
+        config_menu=$(dialog \
+                        --backtitle "Configure PRoot-distro-tui-u - 2.3-unstable_shogun" \
+                        --title "Configure" \
+                        --menu "How do you wish to configure the script?\n\nSome functions can potentailly break either the script, the proot-distro or Termux all together, so be careful\n\nOptions will be reverted to default setting, don't worry as Perma-configure is on the way with version 2.4 soon\n\nAlso remeber that this area does not affect/change proot-distro's way of locating assets/tarballs" 0 0 0 \
+                        "Change PRoot Distro .sh Location" "Switch where should Sources be extracted/Where PRoot-distro's library is" \
+                        "Change Extracted Tarball Location" "<!> DANGER ; Change where the Extracted Tarballs are" \
+                        3>&1 1>&2 2>&3 )
+            local xc=$?
+            exec 3>&-
+            case $xc in 
+                1)
+                    menu
+                    ;;
+                9)
+                    clear
+                    msg "SIGKILL Detected, Switch to EXIT"
+                    exit 1
+                    ;;
+            esac
+            case $config_menu in 
+                "Change PRoot Distro .sh Location")
+                    change_sh_loc
+                    ;;
+                "Change Extracted Tarball Location")
+                    change_tar_loc
+                    ;;
+            esac 
+}
+
+function broadcast_msgbox () {
+    dialog --backtitle "$1" --title "$2" --msgbox "$3" 0 0 
+}
+
+function help () {
+    dialog --backtitle "HELP PAGE - Proot-distro-tui-u : 2.3-unstable_shogun" --title "Help" --msgbox "$(cat assets/help)" 0 0 
+    menu
+}
+
+function yesno () {
+    # A lazy yes no function because im lazy
+    dialog --backtitle "$1" --title "$2" --yes-label "$3" --no-label "$4" --yesno "$5" 0 0
+    fc=$?
+    case $fc in
+        0)
+            "$6" # Calls the function that the user provided
+            ;;
+        1)
+            "$7" # Calls the function that the user provided
+            ;;
+    esac
+}
+
+
+function wipe_file () {
+    clear
+    count="1"
+    if [ -e "/data/data/com.termux/files/usr/etc/proot-distro/VERSION" ]; then 
+        distlist=( "$PROOT_PROFILE/ubuntu-sub-arm64.sh" "$PROOT_PROFILE/debian-sub-arm64.sh" "sources/pardus-sub-amd64.sh" "$PROOT_PROFILE/alpine-sub-arm64.sh" "$PROOT_PROFILE/alpine-sub-amd64.sh" "$PROOT_PROFILE/alpine-arm64.sh" "$PROOT_PROFILE/alpine-arm32.sh" "$PROOT_PROFILE/alpine-amd64.sh" "$PROOT_PROFILE/alpine-i686.sh" "$PROOT_PROFILE/archlinux-arm32.sh" "$PROOT_PROFILE/archlinux-arm64.sh" "$PROOT_PROFILE/debian-arm64.sh" "$PROOT_PROFILE/debian-amd64.sh" "$PROOT_PROFILE/debian-arm32.sh" "$PROOT_PROFILE/debian-i686.sh" "$PROOT_PROFILE/fedora-amd64.sh" "$PROOT_PROFILE/fedora-arm64.sh" "$PROOT_PROFILE/manjaro-arm64.sh" "$PROOT_PROFILE/pardus-amd64.sh" "$PROOT_PROFILE/pardus-arm64.sh" "$PROOT_PROFILE/pardus-i686.sh" "$PROOT_PROFILE/ubuntu-amd64.sh" "$PROOT_PROFILE/ubuntu-arm32.sh" "$PROOT_PROFILE/ubuntu-arm64.sh" "$PROOT_PROFILE/VERSION" )
+        for drem in "${distlist[@]}" ; do
+            rm -rf "$drem"
+            if [ ! -e "$drem" ] ; then 
+                printf "Files Removed: \%2d\n" $count
+                count=$((count + 1))
+                sleep 1
+            fi 
+        done
+            broadcast_msgbox "Removed - PRoot-distro-tui-u 2.3-unstable_shogun" "Files Removed" "The files for the proot-distro-tui has been removed" 
+            menu 
+        else 
+        clear
+    fi 
+}
+
+
+function export_file () {
+    if [ "$1" == "arm64" ] || [ "$(uname -m)" == "aarch64" ] || [ "$1" == "aarch64" ]; then        # ARM64 (Also allowing ARM32 Export)
+    dist64=("sources/ubuntu/arm64/ubuntu-sub-arm64.sh" "sources/debian/arm64/debian-sub-arm64.sh" "sources/arch/arm64/archlinux-sub-arm64.sh" "sources/alpine/arm64/alpine-sub-arm64.sh" "sources/alpine/arm64/alpine-arm64.sh" "sources/arch/arm64/archlinux-arm64.sh" "sources/debian/arm64/debian-arm64.sh" "sources/fedora/arm64/fedora-arm64.sh" "sources/manjaro/arm64/manjaro-arm64.sh" "sources/pardus/arm64/pardus-arm64.sh" "sources/ubuntu/arm64/ubuntu-arm64.sh" "sources/VERSION" ) # COUNT
+    trap "break" INT
+    for d64 in "${dist64[@]}"; do
+    cp -r "$d64" "$PROOT_PROFILE/"
+        if [ -e "$PROOT_PROFILE/$d64" ]; then 
+        echo "Copied: $PROOT_PROFILE/$d64"
+        else 
+        msg "Could not find the assets copied, retrying..."
+        msg "If this still goes on, please execute Ctrl+C to exit, the TRAP function inside the script will let you escape the hellhole or just long press the session terminal and then kill it there"
+        msg "Retrying in 5 Seconds"
+        sleep 5
+        export_file "$1"
+        break
+        fi
+    done
+    clear
+    msg "Aborted"
+    unset dist64 d64
+    trap - INT
+    broadcast_msgbox "Process Extracted Sucessfully" "Assets Copied" "The custom distro libraries are now in your Termux usr lib\n\nIf you see this while pressing Ctrl+C, then the process is aborted, idk how to isolate them"
+    menu
+    fi
+    if [ "$1" == "arm32" ] || [ "$1" == "arm" ] || [ "$(uname -m)" == "armv7a" ] || [ "$(uname -m)" == "armv7l" ] || [ "$(uname -m)" == "armv8l" ] ; then
+    dist32=("sources/alpine/arm/alpine-arm32.sh" "sources/arch/arm/archlinux-arm32.sh"  "sources/ubuntu/arm/ubuntu-arm32.sh" "sources/VERSION")
+    trap "break" INT
+    for d32 in "${dist32[@]}"; do 
+    cp -r $d32 "$PROOT_PROFILE/"
+    if [ -e "$PROOT_PROFILE/$d32" ]; then 
+        echo "Copied: $PROOT_PROFILE/$d32"
+        else 
+        msg "Could not find the assets copied, retrying..."
+        msg "If this still goes on, please execute Ctrl+C to exit, the TRAP function inside the script will let you escape the hellhole or just long press the session terminal and then kill it there"
+        msg "Retrying in 5 Seconds"
+        sleep 5
+        export_file "$1"
+        break
+        fi
+    done
+    msg "Aborted"
+    trap - INT
+    unset d32 dist32
+    broadcast_msgbox "Process Extracted Sucessfully" "Assets Copied" "The custom distro libraries are now in your Termux usr lib\n\nIf you see this while pressing Ctrl+C, then the process is aborted, idk how to isolate them "
+    menu
+    fi
+    if [ "$1" == "amd64" ] || [ "$1" == "x86_64" ] || [ "$(uname -m)" == "x86_64" ] || [ "$(uname -m)" == "amd64" ] ; then 
+    dist64=( "sources/pardus/amd64/pardus-sub-amd64.sh" "sources/debian/amd64/debian-sub-amd64.sh" "sources/alpine/amd64/alpine-sub-amd64.sh" "sources/alpine/amd64/alpine-amd64.sh" "sources/debian/debian-amd64.sh" "sources/fedora/fedora-amd64.sh" "sources/pardus/amd64/pardus-amd64.sh" "sources/ubuntu/amd64/ubuntu-amd64.sh" "sources/VERSION")
+    trap "break" INT 
+    for d64 in "${dist64[@]}"; do
+    cp -r "$d64" "$PROOT_PROFILE/"
+    if [ -e "$PROOT_PROFILE/$d64" ]; then 
+        echo "Copied: $PROOT_PROFILE/$d64"
+        else 
+        msg "Could not find the assets copied, retrying..."
+        msg "If this still goes on, please execute Ctrl+C to exit, the TRAP function inside the script will let you escape the hellhole, or just long press the session terminal and then kill it there"
+        msg "Retrying in 5 Seconds"
+        sleep 5
+        export_file "$1"
+        break
+        fi
+    done
+    msg "Aborted"
+    trap - INT 
+    unset d64 dist64
+    broadcast_msgbox "Process Extracted Sucessfully" "Assets Copied" "The custom distro libraries are now in your Termux usr lib\n\nIf you see this while pressing Ctrl+C, then the process is aborted, idk how to isolate them "
+    menu
+    fi 
+    if [ "$1" == "i686" ] || [ "$(uname -m)" == "i686" ] || [ "$(uname -m)" == "x86" ]; then
+    dist32=("sources/alpine/intel32/alpine-i686.sh" "sources/debian/intel32/debian-i686.sh" "sources/pardus/intel32/pardus-i686.sh" "sources/VERSION" )
+    trap "break" INT
+    for d32 in "${dist32[@]}" ; do 
+    cp -r "$d32" "$PROOT_PROFILE/"
+    if [ -e "$PROOT_PROFILE/$d32" ]; then 
+        echo "Copied: $PROOT_PROFILE/$d32"
+        else 
+        msg "Could not find the assets that were completely copied..."
+        msg "If this go on... Please abruptly kill the process and report the issue"
+        msg "Retrying in 5 seconds"
+        sleep 5
+        export_file "$1"
+        break 
+        fi 
+    done 
+    msg "ABORTED"
+    trap - INT
+    unset dist32 d32
+    broadcast_msgbox "Process Extracted Sucessfully" "Process Job Done" "The process of copying intel32 files has been completed"
+    menu 
+    fi        
+}
+
+function Dists_CONF () {
+    OLD_VAR_PROOT_DISTS="$PROOT_DISTS"
+    PROOT_DISTS="$1"
+    dialog --backtitle "Done" --title "Configured" --msgbox "PROOT_DISTS Variable now set to: $PROOT_DISTS\n\nPrevious:\n$OLD_VAR_PROOT_DISTS" 0 0 
+    menu
+}
+
+function Dists_PROFILE () {
+    OLD_VAR_PROOT_PROFILE="$PROOT_PROFILE"
+    PROOT_PROFILE="$1"
+    broadcast_msgbox "Config Changed" "PATH Changed for PROOT_PROFILE \n\nNow Set to: $PROOT_PROFILE\n\nPreviously:\n $OLD_VAR_PROOT_PROFILE"
+    menu
+} 
+
+# This is bloat, and i doubt i would use these variables later
+
+function check_arch () {
+    if [[ $(uname -m) == "aarch64" ]]; then 
+        isARM64=0
+        isARM32=0
+        isAMD64=1
+        isINTEL32=1
+        isPWNCHK=0
+        welcome
+        else 
+        isPWNCHK=1
+    fi
+    if [[ $(uname -m) == "x86_64" ]] || [[ $(uname -m) == "amd64" ]] ; then 
+        isARM64=1
+        isARM32=1
+        isAMD64=0
+        isINTEL32=0
+        isPWNCHK=0
+        welcome 
+        else 
+        if [ "$isPWNCHK" != 1 ]; then
+        isPWNCHK=1
+        fi
+    fi
+    if [[ $(uname -m) == "i686" ]] || [[ $(uname -m) == "x86" ]] ; then 
+        isARM64=1
+        isARM32=1
+        isAMD64=1
+        isINTEL32=0
+        isPWNCHK=0
+        welcome 
+        else 
+        if [ "$isPWNCHK" != 1 ]; then
+        isPWNCHK=1
+        fi
+    fi
+    if [[ $(uname -m) == "armv7l" ]] || [[ $(uname -m) == "armv7a" ]] || [[ "$(uname -m)" == "armv8l" ]] ; then 
+        isARM64=1
+        isARM32=0
+        isAMD64=1
+        isINTEL32=1
+        isPWNCHK=0
+        welcome 
+        else 
+        if [ "$isPWNCHK" != 1 ]; then
+        isPWNCHK=1
+        fi
+    fi
+    if [[ "$isPWNCHK" == "1"  ]]
+        then
+        broadcast_msgbox "ERROR" "Couldn't Determine Architecture" "The script cannot determine your architecture\nThe script only supports ARM64,ARM, Intel32(i686) and AMD64(x86_64)\n\n Your Device architecture: $(uname -m)."
+        exit
+    fi 
+}

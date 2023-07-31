@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Use Case License for Users</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        ol {
+            margin-left: 20px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Use Case License for Users</h1>
+
+    <div class="section">
+        <h2>Main Users</h2>
+        <ol>
+            <li>
+                <p>Access to Critical Components:</p>
+                <p>By using this software, you acknowledge and agree that certain critical components within Termux are accessed by the software. These components are essential for the functioning of the software and may include but are not limited to libraries, utilities, and system tools.</p>
+            </li>
+            <li>
+                <p>No Warranty:</p>
+                <p>The software is provided "as is" without any warranty of any kind, whether express or implied. The authors, developers, and contributors of the software do not guarantee its functionality, reliability, or suitability for any purpose. You understand and acknowledge that the use of this software is at your own risk.</p>
+            </li>
+            <li>
+                <p>GPL-3 License:</p>
+                <p>The software is distributed under the terms of the GNU General Public License version 3 (GPL-3). By using the software, you agree to abide by the terms and conditions set forth in the GPL-3 license.</p>
+            </li>
+            <li>
+                <p>Installing Custom Tarballs:</p>
+                <p>You agree that installing custom tarballs without proper verification by the Termux-proot Teams may be potentially harmful to your device or Termux environment. You acknowledge that neither the author of the software nor the official Termux developers or PRoot authors are responsible for any damages or malfunctions caused by the installation of non-signed or malicious tarballs. By agreeing to this provision, you take full responsibility for any consequences resulting from such installations.</p>
+            </li>
+            <li>
+                <p>Certified Custom Tarballs:</p>
+                <p>All custom tarballs provided in this software repository have been certified by Termux Developers, ensuring their safety and reliability. You can trust that these tarballs have undergone thorough evaluation and testing by the official Termux team.</p>
+            </li>
+            <li>
+                <p>Reading Comprehension and Issue Submission:</p>
+                <p>As a user, it is essential to have proper reading comprehension and understanding of the software documentation. Before submitting any issue, ensure that you have read and followed the proper order of procedures and guidelines outlined in the documentation. This will help maintain a smooth and efficient support process.</p>
+            </li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>Developers</h2>
+        <ol>
+            <li>
+                <p>Following GPL-3:</p>
+                <p>If you, as a developer, choose to modify the software, it is strongly recommended that you adhere to the guidelines and principles outlined in the GNU General Public License version 3 (GPL-3). By doing so, you ensure that your modified script remains free from any suspicious or malicious elements.</p>
+            </li>
+            <li>
+                <p>Ensuring Safe Tarballs:</p>
+                <p>As a developer, you are responsible for ensuring the safety and usability of the custom tarballs you create. It is crucial to thoroughly test and validate your tarballs before distributing them to the community. Make sure that your script does not cause harm or damage to any user's device or Termux environment.</p>
+            </li>
+            <li>
+                <p>Compliance with Laws and Regulations:</p>
+                <p>When developing and distributing software, it is your responsibility to comply with all applicable laws, regulations, and legal requirements. Ensure that your actions and the software you create do not violate any intellectual property rights, privacy laws, or other legal provisions.</p>
+            </li>
+        </ol>
+    </div>
+</body>
+</html>

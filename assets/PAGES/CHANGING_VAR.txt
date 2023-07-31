@@ -1,0 +1,6 @@
+Changing Variables
+
+You can change cached variables in this script, allowed by the Configure Options
+
+The feature is present here (Akane) due to adding support to custom proot-distro script, like your own version.
+But customizing that came at a danger since the default uninstallation process is using rm function to remove distros. So you need to be careful

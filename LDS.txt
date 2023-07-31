@@ -1,0 +1,57 @@
+sources
+├── alpine
+│   ├── amd64
+│   │   ├── alpine-amd64.sh
+│   │   └── alpine-sub-amd64.sh
+│   ├── arm
+│   │   └── alpine-arm32.sh
+│   ├── arm64
+│   │   ├── alpine-arm64.sh
+│   │   └── alpine-sub-arm64.sh
+│   └── intel32
+│       └── alpine-i686.sh
+├── arch
+│   ├── arm
+│   │   └── archlinux-arm32.sh
+│   └── arm64
+│       ├── archlinux-arm64.sh
+│       └── archlinux-sub-arm64.sh
+├── CUSTOM
+├── debian
+│   ├── amd64
+│   │   ├── debian-amd64.sh
+│   │   └── debian-sub-amd64.sh
+│   ├── arm
+│   │   └── debian-arm32.sh
+│   ├── arm64
+│   │   ├── debian-arm64.sh
+│   │   └── debian-sub-arm64.sh
+│   └── intel32
+│       └── debian-i686.sh
+├── fedora
+│   ├── amd64
+│   │   └── fedora-amd64.sh
+│   └── arm64
+│       └── fedora-arm64.sh
+├── manjaro
+│   └── arm64
+│       └── manjaro-arm64.sh
+├── pardus
+│   ├── amd64
+│   │   ├── pardus-amd64.sh
+│   │   └── pardus-sub-amd64.sh
+│   ├── arm64
+│   │   └── pardus-arm64.sh
+│   └── intel32
+│       └── pardus-i686.sh
+├── ubuntu
+│   ├── amd64
+│   │   └── ubuntu-amd64.sh
+│   ├── arm
+│   │   └── ubuntu-arm32.sh
+│   └── arm64
+│       ├── ubuntu-arm64.sh
+│       └── ubuntu-sub-arm64.sh
+└── VERSION
+
+28 directories, 27 files

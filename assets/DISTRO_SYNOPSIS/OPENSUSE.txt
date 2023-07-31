@@ -1,0 +1,2 @@
+OpenSUSE Linux
+openSUSE is a free and open source RPM-based Linux distribution developed by the openSUSE project.

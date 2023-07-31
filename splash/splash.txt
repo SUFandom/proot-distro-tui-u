@@ -1,6 +1,8 @@
+# This is old splash text that once used in 2.2 and eariler, its no longer used
+# I could Revive this but at what cost?
+
 What if we commit, and there were no conflicts?
 Did you know that this script is licensed as GPL 3.0?
-Team Shino ftw
 Goodbye Andronix Support!
 Do you know that you can make termux, as a host audio server?
 Did you know there's a Manga For Ubuntu, called Ubunchu?! Find the link by executing main.sh a lot, its somewhere in the splashes

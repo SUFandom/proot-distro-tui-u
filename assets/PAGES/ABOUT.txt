@@ -1,0 +1,15 @@
+PRoot-Distro TUI Unstable
+
+2.4-unstable-akane
+
+This software/script/project is licensed to GNU GPL 3, Please Follow the License when attempting to make a fork
+
+This software HAS ALWAYS BEEN TO HAVE NO WARRANTY WHATSOEVER
+
+This software uses these Packages to operate:
+
+- dialog
+
+- tput
+
+- file 

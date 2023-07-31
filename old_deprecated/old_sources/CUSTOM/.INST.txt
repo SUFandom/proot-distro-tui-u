@@ -1,0 +1,2 @@
+This area is served for people who want to add their own scripts here
+Follow the distro_sample.sh for more details

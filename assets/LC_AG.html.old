@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>License Agreement</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    p {
+      margin-bottom: 10px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .signature {
+      margin-top: 30px;
+    }
+
+    .signature-label {
+      font-weight: bold;
+    }
+
+    .date {
+      text-align: right;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>License Agreement</h1>
+
+  <div class="section">
+    <p class="section-title">Author / Developer: SUFandom</p>
+    <p class="section-title">Software: PRoot-distro-tui-u</p>
+  </div>
+
+  <div class="section">
+    <p>From developer to the User who is using the script:</p>
+
+    <ol>
+      <li>User should agree to any changes of UCLA, or Use Case License for users as mentioned previously in the dialog.</li>
+      <li>The user should agree to NOT submit an issue if the tarballs provided are not supported by the system, and the developer is not responsible for any incompatibility with Vulkan, OpenGL (EGL/GL), or ANGLE support.</li>
+      <li>Grant access to the inner Termux Libraries and the entirely accessible storage of your Android device to ensure stable process of the software.</li>
+      <li>User should not send death threats to the author of the software or face potential ban from the service hosting/distributor that the developer/author relies on (Primarily GitHub or GitLab).</li>
+      <li>The user should be reminded that the software they are currently using is a beta version. They should expect any issues that may occur. If any problems arise, the user should inform the Author of the incident to address the situation easily and efficiently.</li>
+      <li>The User is 100% legally allowed to obtain any snapshot of the UCLA and this license agreement that they've agreed during that time or the current version.</li>
+      <li>Abide by the GPL-3 that this software has embedded itself upon.</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <p>The license mentioned is also legal within their respective iteration of the software. Users are reminded that every change/update of the software can potentially cause the UCLA and the License Agreement to change over time, so they should be aware.</p>
+  </div>
+
+  <div class="signature">
+    <p class="signature-label">User's Name:</p>
+    <p>[User's Name]</p>
+    <p class="signature-label">User's Signature:</p>
+    <p>[User's Signature]</p>
+  </div>
+
+  <div class="signature">
+    <p class="signature-label">SUFandom (Developer / Author):</p>
+    <p>[Developer's Name]</p>
+    <p class="signature-label">Developer's Signature:</p>
+    <p>[Developer's Signature]</p>
+  </div>
+
+  <div class="date">
+    <p>Date: [Date of Agreement Acceptance]</p>
+  </div>
+</body>
+</html>

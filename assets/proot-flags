@@ -1,0 +1,23 @@
+  help         - Show this help information.
+
+  backup       - Backup a specified distribution.
+
+  install      - Install a specified distribution.
+
+  list         - List supported distributions and their
+                 installation status.
+
+  login        - Start login shell for the specified distribution.
+
+  remove       - Delete a specified distribution.
+                 WARNING: this command destroys data!
+
+  rename       - Rename installed distribution.
+
+  reset        - Reinstall from scratch a specified distribution.
+                 WARNING: this command destroys data!
+
+  restore      - Restore a specified distribution.
+                 WARNING: this command destroys data!
+
+  clear-cache  - Clear cache of downloaded files.

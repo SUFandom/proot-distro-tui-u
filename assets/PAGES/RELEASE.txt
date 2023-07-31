@@ -1,0 +1,8 @@
+2.4-unstable-akane
+
+This public beta introduces:
+
+- Removal of Userspace Implementation
+- Added Verbose Announcement, this will make bug fixing to be easy, as long as the reporter submits a full detail of introduces
+- Uses proot-distro to remove arch-based Distros due to some dirs stuck at readonly
+

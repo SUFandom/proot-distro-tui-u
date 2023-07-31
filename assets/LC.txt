@@ -1,0 +1,34 @@
+PRoot-distro-tui-u License Agreement
+July 2023
+Use arrow keys to navigate
+
+---
+
+END USER LICENSE AGREEMENT
+
+This End User License Agreement ("Agreement") is a legal agreement between you ("User") and [Software Author] ("Author") for the use of the software product, including any associated documentation (collectively referred to as the "Software").
+
+By using the Software, you agree to be bound by the terms and conditions of this Agreement. If you do not agree to the terms of this Agreement, you must not use the Software.
+
+1. License Grant and Distribution:
+   The Software is licensed under the GNU General Public License version 3 (GPLv3). The source code for the Software is available on GitHub. You are granted a non-exclusive, non-transferable license to use, modify, and distribute the Software in accordance with the terms of the GPLv3.
+
+2. Warranty Disclaimer:
+   The Software is provided "as is," without warranty of any kind, express or implied. The Author does not guarantee the accuracy, reliability, or performance of the Software. You assume all risks and responsibilities for the use of the Software.
+
+3. Incompatibility Factors:
+   The Author shall not be held responsible for any incompatibility factors, including but not limited to incompatible architecture to the specified distribution, lack of compatibility with Hardware OpenGL/EGL/Vulkan/ANGLE support out of the box, or any issues that may arise while compiling the Hardware Graphics Library from another source. The Author is not liable for any mishaps or mistakes that may occur during the compilation process.
+
+4. Tarball Safety:
+   All Tarballs provided with the Software have been tested and examined by the Termux PRoot-distro Community for safety. However, the Author does not guarantee the safety or integrity of Third Party Tarballs. You assume all risks associated with their usage.
+
+5. Issue Submission:
+   If you encounter any issues with the Software, you are encouraged to submit detailed issue reports to the Author. Providing detailed information will help the Author address the issues more efficiently.
+
+6. Snapshot and Disagreement:
+   You are allowed to have a snapshot of this Agreement from the day you accept it. If you disagree with any part of this Agreement, please refrain from obtaining a copy of the Software as your disagreement constitutes a voluntary rejection of the terms and conditions set forth herein.
+
+7. Future License Modifications:
+   By agreeing to this Agreement, you acknowledge that the Author may make modifications to the license in the future. If you disagree with any updated license terms, you may need to revert back to the previous version of the Software and continue using it under the terms of the earlier agreement.
+
+---

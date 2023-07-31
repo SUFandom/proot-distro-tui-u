@@ -1,0 +1,3 @@
+Proot-Distro-TUI-U
+
+Using PRoot-Distro-TUI-U means you agree to let the script have access to your Termux's Core Directories

@@ -1,0 +1,24 @@
+LICENSE AGREEMENT
+Use Up and Down to scroll
+Left and Right to select
+
+This License Agreement ("Agreement") is entered into between SUFandom ("Developer" or "Author") and the User ("User") of the software application known as PRoot-distro-tui-u ("Software"). By using the Software, User agrees to be bound by the terms and conditions set forth in this Agreement.
+
+1. Changes to the UCLA: User acknowledges and agrees to be bound by any changes made to the UCLA (Use Case License for Users) as mentioned in previous discussions or dialogs.
+
+2. Compatibility and Issues: User agrees not to submit any issues related to the use of unsupported tarballs on their system. Developer shall not be held responsible for any incompatibility issues with Vulkan, OpenGL (EGL/GL), or ANGLE support.
+
+3. Access and Permissions: User grants permission for the Software to access the inner Termux Libraries and the entire accessible storage of their Android device to ensure stable operation of the Software.
+
+4. Prohibited Behavior: User agrees not to send death threats or engage in any harmful or malicious activities towards the Author. Violation of this provision may result in potential bans from the service hosting/distributor relied upon by the Developer/Author, primarily GitHub or GitLab.
+
+5. Beta Software: User acknowledges that the Software is currently in beta stage and may contain issues or bugs. In the event of any problems, User is encouraged to notify the Author promptly for efficient resolution.
+
+6. License Retrieval: User is legally entitled to obtain any snapshot of the UCLA and this License Agreement that they have agreed to during the time of their acceptance or the current version.
+
+7. GPL-3 Compliance: User agrees to abide by the terms of the GNU General Public License Version 3 (GPL-3) as embedded within this Software.
+
+User is reminded that the terms of this Agreement are subject to change with each update or modification of the Software. It is User's responsibility to review and comply with the latest version of the UCLA and this License Agreement.
+
+By using the Software, User acknowledges that they have read and understood this Agreement and agree to be bound by its terms and conditions.
+

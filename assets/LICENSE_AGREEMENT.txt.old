@@ -1,0 +1,27 @@
+LICENSE AGREEMENT
+Use arrow keys (up) and (down) to read
+
+This License Agreement ("Agreement") is entered into between SUFandom ("Author") and the Users ("User(s)") of the Proot-distro-tui-u software ("Software") developed by SUFandom. This Agreement sets forth the terms and conditions under which the User may use the Software.
+
+1. Warranty Disclaimer: The User acknowledges and agrees that the Software provided by SUFandom is provided on an "as is" basis without any warranties or guarantees of any kind. SUFandom does not warrant that the Software will be error-free, reliable, or meet the User's requirements. The User acknowledges that they are solely responsible for any modifications made to the Software without proper understanding of its workings, and the Author shall not be held liable for any damage caused by such modifications.
+
+2. Access to Inner Libraries: The User acknowledges and agrees that the Software should require access to the inner libraries of Termux, a software developed by Termux Developers. By using the Software, the User should agree to grant permission for the Software to modify only the necessary components as specified in the README documentation and should not modify any other aspects of Termux.
+
+3. Source of Tarballs: The User acknowledges and agrees that the Proot-distro repositories maintained by Termux Developers should be the exclusive and authorized sources of tarballs for the distribution files required by the Software. The User should agree not to obtain or use third-party copies of the tarballs that may compromise the integrity or security of their device.
+
+4. Compatibility and Limitations: The User acknowledges that the Author is not responsible for any incompatibility issues arising from the following:
+
+a. Old Architecture: The Software may not be compatible with older CPU architectures such as i686, armv7a, armv7l, or armv8l.
+b. Insufficient Physical RAM: The User's device may require a minimum amount of physical RAM as dictated by the dependencies of the specific distribution being used.
+c. Lack of CPU Power: The Software may require a certain level of CPU power, and its performance may be impacted on low-powered devices.
+d. No GL/EGL/Vulkan Support: The Software may require Adreno/ATI or AMD Radeon, Nvidia, or Mesa Intel GPUs with GL, EGL, or Vulkan support on the User's device.
+e. Running in Root Mode: Operating the Software in root mode may result in incompatibilities or unintended consequences.
+f. Lack of Systemd Functions: The Software may not have access to systemd functions due to the isolated environment in which it operates.
+
+By using the Software, the User acknowledges and agrees to the above limitations, and the Author shall not be held responsible for any issues arising from these compatibility constraints.
+
+By accessing, downloading, installing, or using the Software, the User agrees to be bound by the terms and conditions of this Agreement. If the User does not agree with any of the provisions of this Agreement, they must immediately cease using the Software.
+
+This Agreement is governed by and construed in accordance with the laws of the jurisdiction in which the Author resides. Any disputes arising out of or in connection with this Agreement shall be resolved through good faith negotiations between the parties. If a resolution cannot be reached, the parties agree to submit to the exclusive jurisdiction of the courts in the Author's jurisdiction.
+
+By using the Software, the User acknowledges that they have read and understood this Agreement, and agree to be bound by its terms and conditions.

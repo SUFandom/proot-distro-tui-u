@@ -1,0 +1,58 @@
+Mesa GL Support
+
+NOTE: FOR SPECIFIC ADRENO 7xx USERS, PLEASE STRICTLY REFER TO THIS POST:
+https://www.reddit.com/r/termux/comments/15dpv5y/prootdistro_ubuntu_adreno_7xx_gpu_series/
+
+THIS POST IS ONLY FOR UNIVERSAL GPU: Mali G Series (2019-LATER), IMMORTALIS (2022)
+
+FOR AMD RDNA2 GPUs(Xclipse), PLEASE TRY TO INSTALL AMD's GL LIBRARIES INSTEAD OF FOLLOWING THE INSTRUCTION
+
+For GPU that's released 2018 and before may experience extreme artifact issues, especially in wayland render
+
+ALSO I CANNOT GUARANTEE THAT THIS WOULD WORK IN YOUR DEVICE
+
+Hello, this guide is extremely complicated as this instructions only to require you a Debian-based distros like Ubuntu, Pardus and Debian Itself, but for other distros, please seek help on Reddit for that, as i cannot help you with that
+
+Requirements: 
+    - Debian Based distros
+    - git
+    - cmake, make , ninja and most devel packages that has a rendering libraries 
+    - A working and functioning Human brain
+
+First, prepare a Debian PRoot
+
+Clone this: https://github.com/Grima04/mesa-turnip-kgsl
+
+Or just Grab This:
+https://gitlab.freedesktop.org/mesa/mesa
+
+Then modify the /etc/apt/sources.list to this, assuming your debian is 12:
+
+deb http://deb.debian.org/debian/ bookworm main contrib nonfree
+deb-src http://deb.debian.org/debian/ bookworm main contrib nonfree
+
+DO NOT REMOVE THE SECURITY REPOS! DO NOT REMOVE THE SECURITY REPOS!
+
+then run this:
+
+$ apt-get build-dep mesa
+
+Then, download all devel packages that relate to composition and also install: Clang, cmake, gcc, make  
+
+Or you can just proceed straight ahead
+
+Then run This (assuming youre in the cloned repo dir):
+
+mkdir build
+cd build
+meson ..
+sudo ninja install
+
+
+Although i would recommend you to follow this instruction instead to tweak the compiling:
+
+https://mesa3d.org/install.html
+https://mesa3d.org/meson.html
+
+
+Restart your session and make sure the libraries that were compiled are exported in variable so that it should work

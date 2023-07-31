@@ -1,0 +1,900 @@
+#!/bin/bash
+# 2.3.1-Unstable_shogun
+# This is a rewrite because the first iteration code was messy...
+# You can look at it on $DIR/oldfile-mn.vrnn
+
+# Also folks
+# Avoid using exec 3>&1 and 3>&1 1>&2 2>&3 (dialog menu/radiolist) and exec 3>&-, because in these monolithic situations. 
+# Those things are a bitch
+# Instead use: 2>&1 >/dev/tty, quite compact, always works on monolithic configuration!
+# Also DONOT DECLARE a variable to local, youre just turning this script into Rust. (mutable and non mutable moment)
+
+# Phind AI's Statement why:
+# Based on the information found, '2>&1 >/dev/tty' combines the error and output streams and displays them on the terminal
+# While 'exec 3>&1, 3>&1 1>&2 2>&3' swaps the output and error streams. 
+
+# Also locking this for security reasons
+LKF=/data/data/com.termux/files/usr/var/run/proot_distro_tui.lock
+
+
+
+function msg () {
+    echo "$1"
+}
+
+function msg_fl () {
+    # Same as msg but can add flags
+    echo $1 "$2"
+}
+
+function cleanup () {
+    unset package pkg path VERID BGT SRC P_SH P_DSTS AMD AMD_2 ARM64 ARM64_2 I32 I32_2 ARM ARM_2 ARM_3 RED GREEN YELLOW BLUE MAGENTA CYAN WHITE RESET BOLD ULINE CIVIS CNORM
+    rm -rf $LKF
+}
+
+trap cleanup EXIT SIGTERM
+
+# Variables
+VERID="2.3.1-unstable-shogun"
+BGT="PRoot-Distro-TUI-U"
+SRC="sources"
+P_SH="/data/data/com.termux/files/usr/etc/proot-distro"
+P_DSTS="/data/data/com.termux/files/usr/var/lib/proot-distro"
+AMD="amd64"
+AMD_2="x86_64"
+ARM64="arm64"
+ARM64_2="aarch64"
+I32="intel32"
+I32_2="i686"
+ARM="arm"
+ARM_2="armv7a"
+
+# COLORS! FOREGROUND AT LEAST
+# setaf - foreground
+# setab - background
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3)
+BLUE=$(tput setaf 4)
+MAGENTA=$(tput setaf 5)
+CYAN=$(tput setaf 6)
+WHITE=$(tput setaf 7)
+RESET=$(tput sgr0)
+
+# TXT
+BOLD=$(tput bold)
+ULINE=$(tput smul)
+
+# CURSORS
+CIVIS=$(tput civis)
+CNORM=$(tput cnorm)
+
+function barrier () {
+    msg "==============================================================="
+}
+
+package=("proot" "proot-distro" "dialog" "wget" "unzip" "file" "tput")
+for pkg in "${package[@]}"; do 
+    printf "Checking if %s is present...\n" "$pkg"
+    path=$(command -v "$pkg" 2>/dev/null)
+
+if [ -n "$path" ]; then
+    msg "Found $pkg, Installed, Located at: $path"
+    sleep 2
+else 
+    msg "$pkg Not Found, please try to install it..."
+    sleep 2
+    exit
+fi
+done
+
+# Util Framework
+# This area serves like a tui Backbone
+# REMIND: DO NOT add menu, radiolist, progressbar into the area, arrays dosent go well, like sodium and water
+
+function yes_no_a1 () {
+    # This is yes/no but there's only one funnel process.
+    dialog --backtitle "$1" --title "$2" --yes-label "$3" --no-label "$4" --yesno "$5" 0 0
+    AMM=$?
+    case $AMM in 
+        0)
+            $6
+            ;;
+        1)
+            $7
+            ;;
+    esac
+}
+
+function yes_no_a2 () {
+    # This is yes/no but the funnel is located in the respective area
+    dialog --backtitle "$1" --title "$2" --yes-label "$3" --no-label "$4" --yesno "$5" 0 0
+}
+
+function splashbox () {
+    # An infobox
+    dialog --backtitle "$1" --title "$2" --infobox "$3" 0 0 
+}
+
+function msgbx () {
+    # A Dialog Message Box
+    # REMIND: ADD A TASK AFTER ADDING THE FUNCTION
+    # There is a chance the script would stop or fallback if it doesnt have a proper set of continuation
+    dialog --backtitle "$1" --title "$2" --msgbox "$3" 0 0
+}
+
+function gen () {
+    # This generate a file that should skip the user's agreement
+    touch "$(pwd)/.i"
+}
+
+
+function check_info_dev () {
+    # Check your device info
+    msg "\n\nSystem Info (Check_info_dev output)\n\n"
+    msg "Name of the user: $(whoami)\n"
+    msg "Device Machine Architecture: $(uname -m)\n"
+    msg "Device Operating System: $(uname -o)\n"
+    msg "Distro Supported:\n$(check_file_arch)"
+}
+
+function check_file_arch () {
+    # If strings to check
+    if [ "$(uname -m)" == "aarch64" ]; then
+        msg "$(uname -m): 7 Distros in Custom Library"
+    fi 
+    if [ "$(uname -m)" == "armv7a" ] || [ "$(uname -m)" == "armv7l" ] || [ "$(uname -m)" == "armv8l" ]; then 
+        msg "$(uname -m): 4 Distros in Custom Library"
+    fi 
+    if [ "$(uname -m)" == "x86" ] || [ "$(uname -m)" == "i686" ]; then 
+        msg "3 Distros in the Custom Library"
+    fi 
+    if [ "$(uname -m)" == "amd64" ] || [ $(uname -m ) == "x86_64" ]; then 
+        msg "6 Distros in the Custom library"
+    fi 
+    if [ $(uname -m) == "unknown" ] ; then 
+        msg "Unknown Unit CPU detected.."
+    fi 
+}
+
+function github_ping () {
+    # Ping Github to check if we are connected!
+    ping -c 4 github.com | grep "packets transmitted" # Don't ask why lol
+}
+
+
+function proot_distro_call () {
+    proot-distro install $1
+}
+
+function proot_distro_execute () {
+    proot-distro login $1
+}
+
+function proot_remove () {
+    rm -rf $P_DSTS/$1
+}
+
+function inputboxers () {
+    dialog --backtitle "$1" --title "$2" --inputbox "$3" 0 0 "$4"
+}
+
+
+
+
+
+
+
+# The Monolithic Code Starts 
+
+# Starts with Welcome Function
+# Goal :
+# 1. Splash
+# 2. Agreeing to Use Cases License Agreement and GPL License
+
+function welcome () {
+    # WELCOME! 
+    splashbox "$VERID" "Welcome!" "Welcome to PRoot-distro-tui-u\n\nVersion 2.3.1-unstable_shogun"
+    license_p1
+}
+
+# UCL (Use Cases License Agreement)
+
+function license_p1 () {
+    # UCL
+    if [ -e $(pwd)/.i ]; then 
+        msg "[1/2]Skipping Agreement"
+        license_p2
+        else 
+        yes_no_a2 "License Agreement - UCLA" "Use Cases License Agreement" "Agree" "Deny" "$(cat assets/UCLA.txt)"
+        STAT=$?
+        case $STAT in 
+            0)
+                license_p2
+                ;;
+            1)
+                exit 
+                ;;
+        esac 
+    fi 
+} 
+
+function license_p2 () {
+    # P2 of the License agreement, more like an extension
+    if [ -e $(pwd)/.i ]; then 
+        msg "[2/2]Skipping Agreement"
+        menu
+    else 
+        yes_no_a2 "License Agreement (Extended for UCLA)" "License Agreement (Extension to UCLA for User side)" "Agree" "Deny"  "$(cat assets/LC.txt)" 
+        STAT=$?
+        case $STAT in 
+            0)
+                gen
+                menu 
+                ;;
+            1)
+                exit 
+                ;;
+        esac 
+    fi 
+}
+
+function menu () {
+    # The menu area
+    # This area resides the selection
+    wrn="$1"
+    menu=$(dialog \
+                    --backtitle "$BGT - $VERID" \
+                    --title "Main Menu Page" \
+                    --menu "This is the main menu of the Script\nSelect what operation do you wanna Perform\n\nVerbose Info:$(check_info_dev)\n\n\nWarning Error (If theres no argument here, that means process ended with 0): $wrn" 0 0 0 \
+                    "Custom Script Manager" "Installs/Removes the Custom Script" \
+                    "Distro Manager" "Manages your Distro(s)" \
+                    "Configure" "Configure the Script" \
+                    "Help and About" "Help and About" \
+                    "Support" "Support the Project" \
+                    2>&1 >/dev/tty)
+    AMM=$?
+    case $AMM in 
+        1)
+            clear
+            msg "Exiting and clearing resources..."
+            exit
+            ;;
+    esac
+    case $menu in 
+        "Custom Script Manager")
+            custom_script_manager
+            ;;
+        "Distro Manager")
+            distro_manager
+            ;;
+        "Configure")
+            Configure
+            ;;
+        "Help and About")
+            help_and_about
+            ;;
+        "Support")
+            support 
+            ;;
+        esac 
+}
+
+function custom_script_manager () {
+    # Here is the area where we give users selection to install and remove the script
+    menu=$(dialog \
+                --backtitle "Custom Script Manager - $BGT - $VERID" \
+                --title "Custom Script Manager Menu [Install or Remove]" \
+                --menu "Status:\n\nCurrently in Repo: $(cat sources/VERSION)\nInstalled: $(cat $P_SH/VERSION)\nIf the Installed Var didn't show any variable, it means the script aren't or not properly installed :(\n\nAnd if the 'Currently in Repo:' Didn't show up, that means the Author didn't add the version ID, or forgor about it :(\n\nAlso, if you want to change the version to an updated one, please remove the script then install it..." 0 0 0 \
+                "Install the Scripts" "Install the Script" \
+                "Remove the Scripts" "Removes the Script" \
+                2>&1 >/dev/tty )
+    
+    AAA=$?
+    case $AAA in 
+        1)
+            menu
+            ;;
+    esac 
+    case $menu in 
+        "Install the Scripts")
+            install_custom_scripts
+            ;;
+        "Remove the Scripts")
+            remove_custom_scripts
+            ;;
+    esac 
+}
+
+function install_custom_scripts () {
+    # This is more like a popup to the user for confirmation...
+    yes_no_a1 "Confirmation - Custom Script Manager - $BGT - $VERID" "Confirm Selection" "Install it" "Go Back" "Are you sure do you want to install custom scripts?\n\nTarballs are ensured that they came from Termux's PRoot-distro Repo..." start_install custom_script_manager
+}
+
+function start_install () {
+    # Lets start the installation!
+    clear 
+    if [ -e sources/VERSION ]; then 
+        msg "FOUND VERSION"
+        msg "Checking Machine Architecture..."
+        sleep 1
+        case $(uname -m) in
+            x86_64)
+                msg "$(uname -m) Detected"
+                msg "Begin the Operation"
+                sleep 1
+                clear 
+                msg "Initializing"
+                # for loop begins
+                amd=("$SRC/alpine/$AMD/*.sh" "$SRC/debian/$AMD/*.sh" "$SRC/fedora/$AMD/*.sh" "$SRC/pardus/$AMD/*.sh" "$SRC/ubuntu/$AMD/*.sh" "$SRC/VERSION")
+                for a64 in "${amd[@]}" ; do 
+                    cp -r $a64 $P_SH/
+                    S=$?
+                        if [ "$S" -eq "0" ] ; then 
+                            printf "[${BLUE}%s${CNORM}]${GREEN}File Copied: from %s to %s/.${CNORM}\n" "$(uname -m)" "$a64" "$P_SH"
+                            sleep 2
+                        else 
+                            printf "${RED}${BOLD}CANNOT FIND: %s in the %s Directory after copying, either the source, nor the copy has the problem, or the storage permission.${CNORM}" "$a64" "$P_SH"
+                            printf "Aborting Immediately..."
+                            sleep 2
+                            menu "\nFail to Copy File\nProcess Ended at For-loop of $(uname -m) under export string.\nAttempting to copy $"
+                            break 
+                        fi 
+                done # For Loop Ends
+                custom_script_manager
+                ;;
+            i686)
+                msg "$(uname -m) Detected"
+                # Please get a better device
+                msg "${RED}${BOLD}It seems that you are running in a legacy x86 only Processor"
+                msg "${GREEN}${BOLD}We would recommend you to use with the Latest x86_64 Based Processor Instead!${CNORM}"
+                sleep 3
+                msg "Begin the Operation"
+                sleep 1
+                clear 
+                msg "Initializing"
+                # For Loop Begins
+                i686=("$SRC/alpine/$I32/*.sh" "$SRC/debian/$I32/*.sh"  "$SRC/pardus/$I32/*.sh" "$SRC/VERSION")
+                for i32 in "${i686[@]}" ; do 
+                    cp -r $i32 $P_SH/
+                    S=$?
+                        if [ "$S" -eq "0" ] ; then 
+                            printf "[${BLUE}%s${CNORM}]${GREEN}File Copied: from %s to %s/.${CNORM}\n" "$(uname -m)" "$P_SH/$i32"
+                            sleep 2
+                        else 
+                            printf "${RED}${BOLD}CANNOT FIND: %s in the %s Directory after copying, either the source, nor the copy has the problem, or the storage permission.${CNORM}" "$i32" "$P_SH"
+                            printf "Aborting Immediately..."
+                            sleep 2
+                            menu "\nFail to Copy File\nProcess Ended at For-loop of $(uname -m) under export string.\nAttempting to copy $(uname -m)"
+                            break 
+                        fi 
+                done #For Loop Ends
+                custom_script_manager
+                ;;
+            armv7a)
+                msg "$(uname -m) Detected"
+                msg "${RED}${BOLD}It seems that you are running in a legacy arm32 only Processor"
+                msg "${GREEN}${BOLD}We would recommend you to use with the Latest aarch64 Based Processor Instead!${CNORM}"
+                sleep 3
+                msg "Begin the Operation"
+                sleep 1 
+                clear 
+                msg "Initializing"
+                # For Loop Begins
+                armv7=("$SRC/alpine/$ARM/*.sh" "$SRC/arch/$ARM/*.sh" "$SRC/debian/$ARM/*.sh" "$SRC/ubuntu/$ARM/*.sh" "$SRC/VERSION")
+                for a32 in "${armv7[@]}" ; do 
+                    cp -r $a32 $P_SH/
+                    S=$?
+                        if [ "$S" -eq "0" ] ; then 
+                            printf "[${BLUE}%s${CNORM}]${GREEN}File Copied: from %s to %s/.${CNORM}\n" "$(uname -m)" "$P_SH/$i32"
+                            sleep 2
+                        else 
+                            printf "${RED}${BOLD}CANNOT FIND: %s in the %s Directory after copying, either the source, nor the copy has the problem, or the storage permission.${CNORM}" "$i32" "$P_SH"
+                            printf "Aborting Immediately..."
+                            sleep 2
+                            menu "\nFail to Copy File\nProcess Ended at For-loop of $(uname -m) under export string.\nAttempting to copy $(uname -m)"
+                            break 
+                        fi 
+                done # For Loop Ends
+                custom_script_manager
+                ;;
+            aarch64)
+                msg "$(uname -m) Detected"
+                msg "Begin the Operation"
+                sleep 1
+                clear 
+                msg "Initializing"
+                # for loop begins
+                arm64_e=("$SRC/alpine/$ARM64/*.sh" "$SRC/arch/$ARM64/*.sh" "$SRC/debian/$ARM64/*.sh" "$SRC/fedora/$ARM64/*.sh" "$SRC/manjaro/$ARM64/*.sh"  "$SRC/pardus/$ARM64/*.sh" "$SRC/ubuntu/$ARM64/*.sh" "$SRC/VERSION")
+                for a64 in "${arm64_e[@]}" ; do 
+                    cp -r $a64 $P_SH/
+                    S=$?
+                        if [ "$S" -eq "0" ] ; then 
+                            printf "[${BLUE}%s${CNORM}]${GREEN}File Copied: from %s to %s/.${CNORM}\n" "$(uname -m)" "$a64" "$P_SH"
+                            sleep 2
+                        else 
+                            printf "${RED}${BOLD}CANNOT FIND: %s in the %s Directory after copying, either the source, nor the copy has the problem, or the storage permission.${CNORM}" "$a64" "$P_SH"
+                            printf "Aborting Immediately..."
+                            sleep 2
+                            menu "\nFail to Copy File\nProcess Ended at For-loop of $(uname -m) under export string.\nAttempting to copy $a64"
+                            break 
+                        fi 
+                done # For Loop Ends
+                custom_script_manager
+                ;;
+            *)
+                msgbox "ERROR DETECTING YOUR CPU - $BGT - $VERID" "Could not Determine: $(uname -m)" "Sorry\n\nWe cant determine your processor Architecture, for safety reasons, this message prevents the copy of the Custom Scripts because it seems that you are using this script in an unsupported architecture: $(uname -m)\n\nThis Script only supports: ARM64(aarch64), AMD64(x86_64), Intel i686(i686/x86), and ARM 32(armv7a)...\n\nIf you think this is a mistake, please submit an issue with the corresponding Screenshot of this Dialog."
+                menu "\nFail to Detect Processor Architecture:\n\nEnded abruptly at the case-switch *) area, in which the uname -m stated that this machine has an unsupported architecture to unsupported to have a custom script [EID: 001_imp_noarch]"
+                ;;
+        esac # Case switch Ends
+        else 
+            clear
+            msg "Could not find: $SRC/VERSION"
+            msg "Please Clone the Repo again and Try again, If Problem Persists, then SUbmit an issue with the screenshot"
+            msg "You have 10 seconds"
+            sleep 11
+            menu "\nFail to Copy Custom Scripts:\nIt seems that the VERSION ID Couldn't be found by if process..."
+    fi
+}
+
+function remove_custom_scripts () {
+    # This is more like a popup to the user for confirmation...
+    yes_no_a1 "Confirmation - Custom Script Manager - $BGT - $VERID" "Confirm Selection" "REMOVE IT" "Go Back" "Are you sure do you want to remove custom scripts?\n\n" remove_install custom_script_manager
+}
+
+function remove_install () {
+    # Lets start the cleanup!
+    clear 
+    if [ -e $P_SH/VERSION ]; then 
+        msg "FOUND VERSION"
+        msg "Checking Machine Architecture..."
+        sleep 1
+        case $(uname -m) in
+            x86_64)
+                msg "$(uname -m) Detected"
+                msg "Begin the Operation"
+                sleep 1
+                clear 
+                msg "Initializing"
+                # for loop begins
+                amd=("VERSION" "alpine-amd64.sh alpine-sub-amd64.sh" "debian-amd64.sh" "debian-sub-amd64.sh" "fedora-amd64.sh" "pardus-amd64.sh" "pardus-sub-amd64.sh" "ubuntu-amd64.sh")
+                for a64 in "${amd[@]}" ; do 
+                    rm -r "${P_SH:?}/$a64" # Bro this line of code wipe out the whole termux, /sdcard directory all by itself for npt setting the :? function (fallback)
+                    S=$?
+                        if [ "$S" -eq "0" ] ; then 
+                            printf "[${BLUE}%s${CNORM}]${GREEN}File Removed: %s.${CNORM}\n" "$(uname -m)" "$a64"
+                            sleep 2
+                        else 
+                            msg "${RED}${BOLD}CANNOT FIND: target files after attempting to removing the files, either the source has the problem, or the storage permission having some problems.${CNORM}"
+                            printf "Aborting Immediately..."
+                            sleep 2
+                            menu "\nFail to Remove File\nProcess Ended at For-loop of $(uname -m) under such string.\nAttempting to remove file."
+                            break 
+                        fi 
+                done # For Loop Ends
+                custom_script_manager
+                ;;
+            i686)
+                msg "$(uname -m) Detected"
+                # Please get a better device
+                sleep 3
+                msg "Begin the Operation"
+                sleep 1
+                clear 
+                msg "Initializing"
+                # For Loop Begins
+                i686=("VERSION" "alpine-i686.sh"  "debian-i686.sh" "pardus-i686.sh" "VERSION")
+                for i32 in "${i686[@]}" ; do 
+                    rm -rf "${P_SH:?}/$i32"
+                    S=$?
+                        if [ "$S" -eq "0" ] ; then 
+                            printf "[${BLUE}%s${CNORM}]${GREEN}File Removed: %s.${CNORM}\n" "$(uname -m)" "$i32"
+                            sleep 2
+                        else 
+                            msg "${RED}${BOLD}CANNOT FIND: target files after attempting to removing the files, either the source has the problem, or the storage permission having some problems.${CNORM}"
+                            printf "Aborting Immediately..."
+                            sleep 2
+                            menu "\nFail to Remove File\nProcess Ended at For-loop of $(uname -m) under such string.\nAttempting to remove file."
+                            break 
+                        fi 
+                done #For Loop Ends
+                custom_script_manager
+                ;;
+            armv7a)
+                msg "$(uname -m) Detected"
+                msg "Begin the Operation"
+                sleep 1 
+                clear 
+                msg "Initializing"
+                # For Loop Begins
+                armv7=("alpine-arm32.sh"  "archlinux-arm32.sh" "debian-arm32.sh" "ubuntu-arm32.sh" "VERSION")
+                for a32 in "${armv7[@]}" ; do 
+                    rm -rf "${P_SH:?}/$a32"
+                    S=$?
+                        if [ "$S" -eq "0" ] ; then 
+                            printf "[${BLUE}%s${CNORM}]${GREEN}File Removed: %s.${CNORM}\n" "$(uname -m)" "$a32"
+                            sleep 2
+                        else 
+                            msg "${RED}${BOLD}CANNOT FIND: target files after attempting to removing the files, either the source has the problem, or the storage permission having some problems.${CNORM}"
+                            printf "Aborting Immediately..."
+                            sleep 2
+                            menu "\nFail to Remove File\nProcess Ended at For-loop of $(uname -m) under such string.\nAttempting to remove file."
+                            break 
+                        fi 
+                done # For Loop Ends
+                custom_script_manager
+                ;;
+            aarch64)
+                msg "$(uname -m) Detected"
+                msg "Begin the Operation"
+                sleep 1
+                clear 
+                msg "Initializing"
+                # for loop begins
+                arm64_e=("alpine-arm64.sh" "alpine-sub-arm64.sh" "archlinux-arm64.sh" "archlinux-sub-arm64.sh" "debian-arm64.sh" "debian-sub-arm64.sh" "fedora-arm64.sh" "manjaro-arm64.sh"  "pardus-arm64.sh" "ubuntu-arm64.sh" "ubuntu-sub-arm64.sh" "VERSION")
+                for a64 in "${arm64_e[@]}" ; do 
+                    rm -rf "${P_SH:?}/$a64"
+                    S=$?
+                        if [ "$S" -eq "0" ] ; then 
+                            printf "[${BLUE}%s${CNORM}]${GREEN}File Removed: %s.${CNORM}\n" "$(uname -m)" "$a64"
+                            sleep 2
+                        else 
+                            msg "${RED}${BOLD}CANNOT FIND: target files after attempting to removing the files, either the source has the problem, or the storage permission having some problems.${CNORM}"
+                            printf "Aborting Immediately..."
+                            sleep 2
+                            menu "\nFail to Remove File\nProcess Ended at For-loop of $(uname -m) under such string.\nAttempting to remove file."
+                            break 
+                        fi 
+                done # For Loop Ends
+                custom_script_manager
+                ;;
+            *)
+                msgbox "ERROR DETECTING YOUR CPU - $BGT - $VERID" "Could not Determine: $(uname -m)" "Sorry\n\nWe cant determine your processor Architecture, for safety reasons, this message prevents the copy of the Custom Scripts because it seems that you are using this script in an unsupported architecture: $(uname -m)\n\nThis Script only supports: ARM64(aarch64), AMD64(x86_64), Intel i686(i686/x86), and ARM 32(armv7a)...\n\nIf you think this is a mistake, please submit an issue with the corresponding Screenshot of this Dialog."
+                menu "\nFail to Detect Processor Architecture:\n\nEnded abruptly at the case-switch *) area, in which the uname -m stated that this machine has an unsupported architecture to unsupported to have a custom script [EID: E:002_rm]"
+                ;;
+        esac # Case switch Ends
+    fi
+}
+
+function distro_manager () {
+    # Manages the Distros
+    # TBH THIS IS A FKIN PAIN NGL!
+    # Also WARN: THIS IS PAAAAINNN
+    msg "${CYAN}Please wait while Github Ping is in Process${CNORM}${RESET}"
+    FETCH_PING=$(github_ping)
+    menu=$(dialog \
+            --backtitle "Distro Manager - $BGT - $VERID" \
+            --title "Distro Manager" \
+            --menu "Distro Manager\n\nYou can manage Distros here\n\nGitHub Server status:\n$FETCH_PING" 0 0 0 \
+            "Install Distro" "Install Distros" \
+            "Run Distro" "Run a Distro" \
+            "Remove Distro" "Remove Distro" \
+            2>&1 >/dev/tty)
+    AMXA=$?
+    case $AMXA in
+        1)
+            menu
+            ;;
+    esac 
+    case $menu in 
+        "Install Distro")
+            install_distro
+            ;;
+        "Run Distro")
+            run_distro
+            ;;
+        "Remove Distro")
+            remove_distro
+            ;;
+    esac 
+}
+
+function install_distro () {
+    # The menu of Install Distro
+    menu=$(dialog \
+            --backtitle "Install Distro - Distro Manager - $BGT - $VERID" \
+            --title "Install Distros of your Liking" \
+            --menu "Select what distro would you like to install" 0 0 0 \
+            "Alpine Linux" "The Bleeding Edge" \
+            "Arch Linux" "Arch Linux" \
+            "Debian" "The Mother of most distros" \
+            "Fedora" "Fedora Linux" \
+            "Manjaro" "Manjaro Aarch64" \
+            "OpenSUSE" "OpenSUSE Linux" \
+            "Pardus" "Turkish Distro Developed by the Scientific and Technological Research Council of Türkiye" \
+            "Ubuntu" "Ubuntu okay, but not for snap" \
+            "Void" "Void Linux" \
+            2>&1 >/dev/tty)
+    AME=$?
+    case $AME in 
+        1)
+            distro_manager
+            ;;
+    esac
+    case $menu in 
+        "Alpine Linux")
+            alpine
+            ;;
+        "Arch Linux")
+            archlinux 
+            ;;
+        "Debian")
+            debian 
+            ;;
+        "Fedora")
+            fedora 
+            ;;
+        "Manjaro")
+            manjaro 
+            ;;
+        "OpenSUSE")
+            opensuse 
+            ;;
+        "Pardus")
+            pardus
+            ;;
+        "Ubuntu")
+            ubuntu
+            ;;
+        "Void")
+            void 
+            ;;
+        esac 
+}
+
+function alpine () {
+    # Alpine Linux 
+    menu=$(dialog \
+            --backtitle "Alpine Linux - Install Distro - Distro manager - $BGT - $VERID" \
+            --title "Alpine Linux" \
+            --menu "Alpine Linux: The Bleeding Edge of Distro\n\nInstalled: [checking feature coming soon]\n\n" 0 0 0 \
+            "Install Distro [Default]" "Install Distro under default category" \
+            "Install Distro [Custom Channel]" "Install Distro under Custom Channel Category (imported from sources > proot-distro)" \
+            "Run Distro" "Run Distro" \
+            "Uninstall Distro [Default]" "Uninstall Distro [Default]" \
+            "Uninstall Distro [Custom Channel]" "Uninstall Distro in the custom Channel" \
+            2>&1 >/dev/tty)
+    AMM=$? 
+    case $AMM in 
+        1)
+            install_distro
+            ;;
+    esac 
+    case $menu in 
+        "Install Distro [Default]")
+            clear 
+            barrier
+            msg "Ready to install"
+            barrier
+            msg "${CYAN}ALPINE LINUX${CNORM}"
+            msg "Source: ${GREEN}Default Channel${CNORM}"
+            barrier 
+            msg " "
+            msg "Initializing..."
+            sleep 1
+            msg "Calling proot-distro..."
+            sleep 3
+            clear
+            proot_distro_call alpine
+            if [ $? -eq 0 ]; then 
+                msgbx "Done" "Complete" "Alpine is installed" 
+                alpine 
+            else 
+                msgbox "ERROR" "ERROR!!!" "PROCESS EXITED WITH 1;\n\nCheck your internet connection, storage space or restart your session/device...\n\nPRoot-distro Broadcasted with ERROR: 1"
+                menu "\nERROR WITH INSTALLING DISTRO: ALPINE\nPRoot-Distro Broadcasted with Error: 1"
+            fi 
+            ;;
+            "Install Distro [Custom Channel]")
+                if [ -e "$P_SH/VERSION" ]; then 
+                    msg "Custom Version Detected: $(cat $P_SH/VERSION)"
+                    sleep 2
+                    msg "Inspecting.."
+                    sleep 1
+                    case $(uname -m) in 
+                        aarch64)
+                            menux=$(dialog \
+                                    --backtitle "Pick Architecture Version - Alpine - Install Distro - Distro Manager - $BGT - $VERID" \
+                                    --title "Pick Architecture Version" \
+                                    --menu "Pick what architecture version you want from alpine\n\nSystem Arcitecture: $(uname -m)\nScript Version: $(cat $P_SH/VERSION)" 0 0 0 \
+                                    "Alpine ARM64 Native" "The Native ARM64 Variant" \
+                                    "Alpine ARMv7 Variant" "Alpine ARMv7 Variant, for ARM64 (armv8a)" \
+                                    2>&1 >/dev/tty)
+                            ARR=$? 
+                            case $ARR in 
+                                1)
+                                    alpine 
+                                    ;;
+                            esac 
+                            case $menux in 
+                                "Alpine ARM64 Native")
+                                    clear 
+                                    msg "Selected: ${CYAN}ALPINE ARM64 NATIVE${CNORM}"
+                                    msg "Getting Ready"
+                                    sleep 3
+                                    proot_distro_call alpine-arm64
+                                        if [ $? -eq 0 ]; then 
+                                            msgbx "Done" "Complete" "Alpine Arm64 Only is installed" 
+                                            alpine 
+                                        else 
+                                            msgbox "ERROR" "ERROR!!!" "PROCESS EXITED WITH 1;\n\nCheck your internet connection, storage space or restart your session/device...\n\nPRoot-distro Broadcasted with ERROR: 1"
+                                            menu "\nERROR WITH INSTALLING DISTRO: ALPINE (Custom ARM64)\nPRoot-Distro Broadcasted with Error: 1"
+                                        fi 
+                                    ;;
+                                "Alpine ARMv7 Variant")
+                                    clear 
+                                    msg "Selected: ${CYAN}ALPINE ARMv7 VARIANT${CNORM}"
+                                    msg "Getting Ready"
+                                    sleep 3
+                                    proot_distro_call alpine-sub-arm64
+                                        if [ $? -eq 0 ]; then 
+                                            msgbx "Done" "Complete" "Alpine ARMv7 Variant is installed" 
+                                            alpine 
+                                        else 
+                                            msgbox "ERROR" "ERROR!!!" "PROCESS EXITED WITH 1;\n\nCheck your internet connection, storage space or restart your session/device...\n\nPRoot-distro Broadcasted with ERROR: 1"
+                                            menu "\nERROR WITH INSTALLING DISTRO: ALPINE (Custom ARMv7)\nPRoot-Distro Broadcasted with Error: 1"
+                                        fi 
+                                    ;;
+                            esac
+                            ;; 
+                        armv7a)
+                            msg "ARMv7a DETECTED"
+                            msg "${RED}THIS ARCHITECTURE IS GETTING OUTDATED, PLEASE GET AN Aarch64 CAPABLE DEVICE${CNORM}"
+                            sleep 5
+                            msg "Calling PRoot-distro"
+                            sleep 1
+                            proot_distro_call alpine-arm32
+                                        if [ $? -eq 0 ]; then 
+                                            msgbx "Done" "Complete" "Alpine ARMv7 Variant is installed" 
+                                            alpine 
+                                        else 
+                                            msgbox "ERROR" "ERROR!!!" "PROCESS EXITED WITH 1;\n\nCheck your internet connection, storage space or restart your session/device...\n\nPRoot-distro Broadcasted with ERROR: 1"
+                                            menu "\nERROR WITH INSTALLING DISTRO: ALPINE (Custom ARMv7)\nPRoot-Distro Broadcasted with Error: 1"
+                                        fi 
+                            ;;
+                        x86_64)
+                            msg "AMD 64 Detected"
+                            msg ""
+                            menux=$(dialog \
+                                    --backtitle "Pick Architecture Version - Alpine - Install Distro - Distro Manager - $BGT - $VERID" \
+                                    --title "Pick Architecture Version" \
+                                    --menu "Pick what architecture version you want from alpine\n\nSystem Arcitecture: $(uname -m)\nScript Version: $(cat $P_SH/VERSION)" 0 0 0 \
+                                    "Alpine AMD64 Native" "The Native ARM64 Variant" \
+                                    "Alpine i686 Variant" "Alpine i686 Variant, for AMD64" \
+                                    2>&1 >/dev/tty)
+                            ARR=$? 
+                            case $ARR in 
+                                1)
+                                    alpine 
+                                    ;;
+                            esac 
+                            case $menux in 
+                                "Alpine AMD64 Native")
+                                    clear 
+                                    msg "Selected: ${CYAN}ALPINE AMD 64 NATIVE${CNORM}"
+                                    msg "Getting Ready"
+                                    sleep 3
+                                    proot_distro_call alpine-amd64
+                                        if [ $? -eq 0 ]; then 
+                                            msgbx "Done" "Complete" "Alpine amd64 Only is installed" 
+                                            alpine 
+                                        else 
+                                            msgbox "ERROR" "ERROR!!!" "PROCESS EXITED WITH 1;\n\nCheck your internet connection, storage space or restart your session/device...\n\nPRoot-distro Broadcasted with ERROR: 1"
+                                            menu "\nERROR WITH INSTALLING DISTRO: ALPINE (Custom AMD64)\nPRoot-Distro Broadcasted with Error: 1"
+                                        fi 
+                                    ;;
+                                "Alpine i686 Variant")
+                                    clear 
+                                    msg "Selected: ${CYAN}ALPINE i686 VARIANT${CNORM}"
+                                    msg "Getting Ready"
+                                    sleep 3
+                                    proot_distro_call alpine-sub-amd64
+                                    ARR=$?
+                                        if [ $ARR -eq 0 ]; then 
+                                            msgbx "Done" "Complete" "Alpine i686 Variant is installed" 
+                                            alpine 
+                                        else 
+                                            msgbox "ERROR" "ERROR!!!" "PROCESS EXITED WITH 1;\n\nCheck your internet connection, storage space or restart your session/device...\n\nPRoot-distro Broadcasted with ERROR: 1"
+                                            menu "\nERROR WITH INSTALLING DISTRO: ALPINE (Custom AMD64)\nPRoot-Distro Broadcasted with Error: 1"
+                                        fi 
+                                    ;;
+                            esac
+                            ;;
+                        i686)
+                            clear 
+                            msg "Selected: ${CYAN}ALPINE i686 VARIANT${CNORM}"
+                            msg "Getting Ready"
+                                    sleep 3
+                                    proot_distro_call alpine-i686
+                                    ARR=$?
+                                        if [ $ARR -eq 0 ]; then 
+                                            msgbx "Done" "Complete" "Alpine i686 Variant is installed" 
+                                            alpine 
+                                        else 
+                                            msgbox "ERROR" "ERROR!!!" "PROCESS EXITED WITH 1;\n\nCheck your internet connection, storage space or restart your session/device...\n\nPRoot-distro Broadcasted with ERROR: 1"
+                                            menu "\nERROR WITH INSTALLING DISTRO: ALPINE (Custom i686)\nPRoot-Distro Broadcasted with Error: 1"
+                                        fi 
+                                    ;;
+                        esac
+                    else 
+                        clear 
+                        msgbox "ERROR" "ERROR" "PRoot-Distro Custom Script Library isn't installed\n\nPlease Reinstall Them"
+                        menu "\nError with Detecting SCript Library: NO_VERSION_FOUND-ALP \n\nPlease Reinstall it and try Again"
+
+                    fi 
+                    ;;
+                "Run Distro")
+                    menx=$(dialog \
+                            --backtitle "Run Distro - Alpine Linux - Install Disro - Distro Manager - $BGT - $VERID" \
+                            --title "Run Distro" \
+                            --menu "Run Alpine Linux Selection\n\nRun Alpine Linux Here" 0 0 0 \
+                            "Run Alpine [Default]" "Run Default Alpine" \
+                            "Run Alpine [Custom Channel]" "Run Alpine in a Custom Channel" \
+                            2>&1 >/dev/tty)
+                    ARS=$?
+                    case $ARS in 
+                        1)
+                            alpine
+                            ;;
+                    esac 
+                    case $menx in
+                        "Run Alpine [Default]")
+                            AAAF=$(inputboxers "Insert a FLag" "Insert PRoot-distro Flag, like --shared-tmp\n\nLeave Empty (RECOMMENDED) if you don't know" --shared-tmp)
+                            clear 
+                            barrier 
+                            msg " "
+                            msg "${GREEN}PRoot-Distro Caller${CNORM}"
+                            msg " "
+                            barrier 
+                            msg " "
+                            msg "${BOLD}[STATUS]${CNORM} : Calling ${GREEN}PRoot-Distro${CNORM} to handle the execution"
+                            sleep 1 
+                            msg "${BOLD}${RED}[ACTION]${CNORM} : Calling NOW"
+                            proot_distro_execute login alpine "$AAF" 
+                            LRF=$?
+                            case $LRF in 
+                                1)
+                                    msgbx "ERROR!!!" "ERROR" "Error Calling Alpine, Probably the Distro wasnt installed or the flag $AAF is what've caused it.."
+                                    menu "\nError Loading Distro: Alpine\n\nProbably Crashed due to its not being installed or the Flag $AAA caused it..."
+                                    ;;
+                                0)
+                                    menu 
+                                    ;;
+                            esac
+                        ;;
+                        "Run Alpine [Custom Channel]")
+                            AAAF=$(inputboxers "Insert a FLag" "Insert PRoot-distro Flag, like --shared-tmp\n\nLeave Empty (RECOMMENDED) if you don't know" --shared-tmp)
+                            clear 
+                            barrier 
+                            msg " "
+                            msg "${GREEN}PRoot-Distro Caller${CNORM}"
+                            msg " "
+                            barrier 
+                            msg " "
+                            msg "${BOLD}[STATUS]${CNORM} : Calling ${GREEN}PRoot-Distro${CNORM} to handle the execution"
+                            sleep 1 
+                            msg "${BOLD}${RED}[ACTION]${CNORM} : Calling NOW"
+                            proot_distro_execute login alpine "$AAF" 
+                            LRF=$?
+                            case $LRF in 
+                                1)
+                                    msgbx "ERROR!!!" "ERROR" "Error Calling Alpine, Probably the Distro wasnt installed or the flag $AAF is what've caused it.."
+                                    menu "\nError Loading Distro: Alpine\n\nProbably Crashed due to its not being installed or the Flag $AAA caused it..."
+                                    ;;
+                                0)
+                                    menu 
+                                    ;;
+                            esac
+                        ;;
+
+                esac
+            esac    # BRUHHHH THIS TOOK WAY LONGER TO DIAGNOSE!                                   
+}
+
+
+
+# Trigger Stage
+# DONOT: ADD ANY MORE THINGS IN HERE EXCEPT THE WELCOME AREA!
+
+welcome 
+
+
